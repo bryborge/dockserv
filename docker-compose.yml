@@ -61,8 +61,8 @@ services:
 #      - traefik.http.routers.traefik.rule=Host(`traefik.${DOMAIN_NAME}`)
 #      - traefik.http.routers.traefik.tls.certresolver=letsencrypt
     networks:
-      - # TODO: Look into socket proxy
-      - traefik_proxy
+      # TODO: Look into socket proxy
+      traefik_proxy:
     ports:
       - "80:80"
       - "443:443"
