@@ -44,7 +44,7 @@ services:
       - traefik.http.middlewares.custom.headers.stsSeconds=315360000
       # Secure Dashboard
       # TODO: Look into oauth
-      - traefik.http.middlewares.admin.basicauth.usersfile=/etc/traefik/config/usersfile
+#      - traefik.http.middlewares.admin.basicauth.usersfile=/etc/traefik/config/usersfile
       # Redirect to https
       - traefik.http.routers.http-catchall.entrypoints=http
       - traefik.http.routers.http-catchall.middlewares=redirect-to-https
@@ -57,7 +57,7 @@ services:
       - traefik.http.routers.traefik-rtr.service=api@internal
       - traefik.http.routers.traefik.middlewares=admin
       - traefik.http.routers.traefik.rule=Host(`traefik.${DOMAIN_NAME}`)
-      - traefik.http.routers.traefik.tls.certresolver=letsencrypt
+      - traefik.http.routers.traefik.tls.certresolver=dns-cloudflare
     networks:
       traefik_proxy:
     ports:
