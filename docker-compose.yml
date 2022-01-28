@@ -71,6 +71,7 @@ services:
         mode: host
     restart: unless-stopped
     volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
       - $DOCKER_DIR/appdata/traefik/config:/etc/traefik/config
       - $DOCKER_DIR/appdata/traefik/acme:/etc/traefik/acme
       - $DOCKER_DIR/appdata/traefik/log:/etc/traefik/log
