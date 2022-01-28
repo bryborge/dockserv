@@ -13,7 +13,7 @@ services:
       - --certificatesResolvers.dns-cloudflare.acme.dnsChallenge.provider=cloudflare
       - --certificatesResolvers.dns-cloudflare.acme.dnsChallenge.resolvers=1.1.1.1:53,1.0.0.1:53
       - --certificatesResolvers.dns-cloudflare.acme.dnsChallenge.delayBeforeCheck=90
-      - --certificatesResolvers.dns-cloudflare.acme.email=${CF_API_EMAIL}
+      - --certificatesResolvers.dns-cloudflare.acme.email=${CLOUDFLARE_EMAIL}
       - --certificatesResolvers.dns-cloudflare.acme.storage=/etc/traefik/acme/acme.json
       - --entrypoints.http.address=:80
       - --entrypoints.https.address=:443
@@ -29,7 +29,7 @@ services:
       - --providers.docker.network=traefik_proxy
     container_name: traefik
     environment:
-      - CF_API_EMAIL=${CLOUDFLARE_EMAIL}
+#      - CF_API_EMAIL=${CLOUDFLARE_EMAIL}
       - CF_API_KEY=${CLOUDFLARE_API_KEY}
     image: traefik:v2.6.0
     labels:
