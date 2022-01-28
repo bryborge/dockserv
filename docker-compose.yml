@@ -29,7 +29,6 @@ services:
       - --providers.docker.network=traefik_proxy
     container_name: traefik
     environment:
-#      - CF_API_EMAIL=${CLOUDFLARE_EMAIL}
       - CF_API_KEY=${CLOUDFLARE_API_KEY}
     image: traefik:v2.6.0
     labels:
@@ -55,7 +54,7 @@ services:
       - traefik.http.routers.traefik-rtr.rule=Host(`traefik.$DOMAIN_NAME`)
       # Services - API
       - traefik.http.routers.traefik-rtr.service=api@internal
-      - traefik.http.routers.traefik.middlewares=admin
+#      - traefik.http.routers.traefik.middlewares=admin
       - traefik.http.routers.traefik.rule=Host(`traefik.${DOMAIN_NAME}`)
       - traefik.http.routers.traefik.tls.certresolver=dns-cloudflare
     networks:
