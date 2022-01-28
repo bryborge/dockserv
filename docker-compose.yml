@@ -17,6 +17,7 @@ services:
       - --certificatesResolvers.dns-cloudflare.acme.storage=/etc/traefik/acme/acme.json
       - --entrypoints.http.address=:80
       - --entrypoints.https.address=:443
+      - --entryPoints.traefik.address=:8080
       - --entrypoints.https.http.tls.certresolver=dns-cloudflare
       - --entrypoints.https.http.tls.domains[0].main=$DOMAIN_NAME
       - --entrypoints.https.http.tls.domains[0].sans=*.$DOMAIN_NAME
@@ -66,6 +67,10 @@ services:
         mode: host
       - target: 443
         published: 443
+        protocol: tcp
+        mode: host
+      - target: 8080
+        published: 8080
         protocol: tcp
         mode: host
     restart: unless-stopped
