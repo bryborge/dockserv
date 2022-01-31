@@ -31,6 +31,7 @@ services:
       - --log=true
       - --log.level=WARN # (Default: ERROR) DEBUG, INFO, WARN, ERROR, FATAL, PANIC
       - --providers.docker=true
+      - --providers.docker.endpoint=tcp://socket-proxy:2375
       - --providers.docker.exposedByDefault=false
       - --providers.docker.network=traefik_proxy
     container_name: traefik
@@ -73,10 +74,6 @@ services:
         mode: host
       - target: 443
         published: 443
-        protocol: tcp
-        mode: host
-      - target: 8080
-        published: 8080
         protocol: tcp
         mode: host
     restart: unless-stopped
