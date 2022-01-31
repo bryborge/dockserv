@@ -1,2 +1,6 @@
+# Environment
 .env
 .htpasswd
+
+# Certs
+acme.json
