@@ -4,3 +4,7 @@
 
 # Certs
 acme.json
+
+# Editor config
+.idea
+.vscode
