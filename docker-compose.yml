@@ -190,7 +190,6 @@ services:
         protocol: udp
         mode: host
     volumes:
-#      - /var/run/docker.sock:/var/run/docker.sock
       - $DOCKER_DIR/appdata/plex/config:/config
       - $DOCKER_DIR/appdata/plex/tmp:/transcode
-#      - /media/nas:/media
+      - /media/nas/media:/media
