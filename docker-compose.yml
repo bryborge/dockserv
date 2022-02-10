@@ -148,7 +148,8 @@ services:
       - traefik.http.routers.plex.tls.certresolver=dns-cloudflare
       - traefik.http.services.plex.loadbalancer.server.port=32400
     networks:
-      - reverse_proxy
+      reverse_proxy:
+      socket_proxy:
     restart: unless-stopped
     ports:
       # TCP
