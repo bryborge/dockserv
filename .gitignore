@@ -8,3 +8,6 @@ acme.json
 # Editor config
 .idea
 .vscode
+
+# Plex
+appdata/plex/config/Library
