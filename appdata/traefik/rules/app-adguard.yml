@@ -2,6 +2,7 @@ http:
   routers:
     adguard-rtr:
       entryPoints:
+        - http
         - https
       middlewares:
         - adguard-add-admin
@@ -17,4 +18,4 @@ http:
     adguard-svc:
       loadBalancer:
         servers:
-          - url: "http://192.168.1.121"
+          - url: "http://192.168.1.121:80"
