@@ -4,9 +4,15 @@ http:
       rule: "HostHeader(`adguard.sonofborge.com`)"
       entryPoints:
         - https
+      middlewares:
+        - adguard-add-admin
       service: adguard-svc
       tls:
         certresolver: dns-cloudflare
+  middlewares:
+    adguard-add-admin:
+      addPrefix:
+        prefix: "/login.html"
   services:
     adguard-svc:
       loadBalancer:
