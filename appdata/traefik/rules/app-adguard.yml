@@ -8,7 +8,7 @@ http:
         - adguard-add-admin
       service: adguard-svc
       tls:
-        certresolver: dns-cloudflare
+        certResolver: dns-cloudflare
   middlewares:
     adguard-add-admin:
       addPrefix:
