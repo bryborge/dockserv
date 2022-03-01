@@ -114,7 +114,7 @@ services:
         mode: host
     restart: unless-stopped
     volumes:
-      - $DOCKER_DIR/appdata/traefik/config:/etc/traefik/config
+      - $DOCKER_DIR/appdata/traefik/rules:/etc/traefik/rules
       - $DOCKER_DIR/appdata/traefik/acme:/etc/traefik/acme
       - $DOCKER_DIR/appdata/traefik/log:/etc/traefik/log
       - $DOCKER_DIR/shared:/shared

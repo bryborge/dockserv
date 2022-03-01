@@ -1,0 +1,14 @@
+http:
+  routers:
+    adguard-rtr:
+      rule: "HostHeader(`adguard.sonofborge.com`)"
+      entryPoints:
+        - https
+      service: adguard-svc
+      tls:
+        certresolver: dns-cloudflare
+  services:
+    adguard-svc:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.1.121:80"
