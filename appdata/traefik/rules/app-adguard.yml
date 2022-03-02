@@ -3,7 +3,7 @@ http:
     adguard:
       entryPoints:
         - https
-      rule: "HostHeader(`adguard.{{ env \"DOMAIN_NAME\"}}`)"
+      rule: "HostHeader(`adguard.{{ env DOMAIN_NAME }}`)"
       service: adguard
       tls:
         certResolver: dns-cloudflare
