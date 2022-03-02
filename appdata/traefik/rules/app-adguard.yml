@@ -3,16 +3,10 @@ http:
     adguard:
       entryPoints:
         - https
-#      middlewares:
-#        - adguard-add-admin
       rule: "HostHeader(`adguard.sonofborge.com`)"
       service: adguard
       tls:
         certResolver: dns-cloudflare
-#  middlewares:
-#    adguard-add-admin:
-#      addPrefix:
-#        prefix: "/login.html"
   services:
     adguard:
       loadBalancer:
