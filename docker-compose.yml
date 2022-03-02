@@ -46,7 +46,7 @@ services:
     # Traefik CLi Documentation: https://doc.traefik.io/traefik/reference/static-configuration/cli-ref/
     command:
       - --accessLog=true
-      - --accessLog.filePath=/traefik.log
+      - --accessLog.filePath=/etc/traefik/log/traefik.log
       - --accessLog.bufferingSize=100
       - --accessLog.filters.statusCodes=400-499
       - --api=true
@@ -71,6 +71,7 @@ services:
       - --providers.docker.exposedByDefault=false
       - --providers.docker.network=reverse_proxy
       - --providers.file.directory=/etc/traefik/rules
+      - --providers.file.watch=true # watch top-level rules/ dir for file changes
     container_name: traefik
     env_file:
       - ${DOCKER_DIR}/.env
