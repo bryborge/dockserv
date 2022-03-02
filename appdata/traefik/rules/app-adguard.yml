@@ -1,12 +1,12 @@
 http:
   routers:
-    adguard-rtr:
+    adguard:
       entryPoints:
         - https
       middlewares:
         - adguard-add-admin
       rule: "HostHeader(`adguard.sonofborge.com`)"
-      service: adguard-svc
+      service: adguard
       tls:
         certResolver: dns-cloudflare
   middlewares:
@@ -14,7 +14,7 @@ http:
       addPrefix:
         prefix: "/login.html"
   services:
-    adguard-svc:
+    adguard:
       loadBalancer:
         servers:
           - url: "http://192.168.1.121:80"
