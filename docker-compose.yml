@@ -70,6 +70,7 @@ services:
       - --providers.docker.endpoint=tcp://socket-proxy:2375
       - --providers.docker.exposedByDefault=false
       - --providers.docker.network=reverse_proxy
+      - --providers.file.directory=/etc/traefik/rules
     container_name: traefik
     env_file:
       - ${DOCKER_DIR}/.env

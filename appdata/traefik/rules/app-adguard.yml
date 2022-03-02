@@ -2,7 +2,6 @@ http:
   routers:
     adguard-rtr:
       entryPoints:
-        - http
         - https
       middlewares:
         - adguard-add-admin
