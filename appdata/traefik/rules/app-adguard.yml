@@ -3,7 +3,7 @@ http:
     adguard:
       entryPoints:
         - https
-      rule: "Host(`adguard.sonofborge.com`)"
+      rule: "Host(`adguard.{{ DOMAIN_NAME }}`)"
       service: adguard
       tls:
         certResolver: dns-cloudflare
