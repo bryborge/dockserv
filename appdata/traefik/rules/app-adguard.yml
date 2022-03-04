@@ -5,7 +5,7 @@ http:
         - https
       middlewares:
         - adguard-admin
-      rule: "Host(`adguard.{ DOMAIN_NAME }`)"
+      rule: "Host(`adguard.{{ env DOMAIN_NAME }}`)"
       service: adguard
       tls:
   middlewares:
