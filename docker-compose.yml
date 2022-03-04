@@ -76,6 +76,8 @@ services:
     env_file:
       - ${DOCKER_DIR}/.env
     environment:
+      - ADGUARD_IP=${ADGUARD_IP}
+      - ADGUARD_PORT=${ADGUARD_PORT}
       - CF_API_KEY=${CLOUDFLARE_API_KEY}
       - DOMAIN_NAME=${DOMAIN_NAME}
     image: traefik:v2.6.0

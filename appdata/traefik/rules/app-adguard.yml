@@ -3,17 +3,11 @@ http:
     adguard:
       entryPoints:
         - https
-#      middlewares:
-#        - adguard-admin
       rule: "Host(`adguard.{{ env "DOMAIN_NAME" }}`)"
       service: adguard
       tls:
-#  middlewares:
-#    adguard-admin:
-#      addPrefix:
-#        prefix: "/login.html"
   services:
     adguard:
       loadBalancer:
         servers:
-          - url: "http://192.168.1.121:80"
+          - url: `http.{{ env "ADGUARD_IP" }}:{{ env "ADGUARD_PORT" }}`
