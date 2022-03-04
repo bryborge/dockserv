@@ -3,10 +3,15 @@ http:
     adguard:
       entryPoints:
         - https
-      rule: "Host(`adguard.{{ DOMAIN_NAME }}`)"
+      middlewares:
+        - adguard-admin
+      rule: "Host(`adguard.{ DOMAIN_NAME }`)"
       service: adguard
       tls:
-        certResolver: dns-cloudflare
+  middlewares:
+    adguard-admin:
+      addPrefix:
+        prefix: "/login.html"
   services:
     adguard:
       loadBalancer:
