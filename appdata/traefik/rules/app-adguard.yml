@@ -1,13 +1,13 @@
 http:
   routers:
-    adguard-rtr:
+    adguard:
       entryPoints:
         - https
       rule: "Host(`adguard.{{ env "DOMAIN_NAME" }}`)"
-      service: adguard-svc
+      service: adguard
       tls:
   services:
-    adguard-svc:
+    adguard:
       loadBalancer:
         servers:
           - url: "http://{{ env "ADGUARD_IP" }}:{{ env "ADGUARD_PORT" }}"
