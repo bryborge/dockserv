@@ -3,15 +3,15 @@ http:
     adguard:
       entryPoints:
         - https
-      middlewares:
-        - adguard-admin
+#      middlewares:
+#        - adguard-admin
       rule: "Host(`adguard.{{ env "DOMAIN_NAME" }}`)"
       service: adguard
       tls:
-  middlewares:
-    adguard-admin:
-      addPrefix:
-        prefix: "/login.html"
+#  middlewares:
+#    adguard-admin:
+#      addPrefix:
+#        prefix: "/login.html"
   services:
     adguard:
       loadBalancer:
