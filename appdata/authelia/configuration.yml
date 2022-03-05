@@ -1,0 +1,67 @@
+# Basic Configuration
+#   Docs: https://www.authelia.com/docs/configuration/
+host: 0.0.0.0
+port: 9091
+log_level: warn # debug, trace, info
+
+default_redirection_url: https://authelia.sonofborge.com # TODO: Use env var
+jwt_secret: 1Zo6F3nxkEJOUFWExVyykgY10oAaQcq0zQ7cVPZiXDjGf9NOu7TnBbHU5W65quW # TODO: Use AUTHELIA_JWT_SECRET_FILE env var
+
+# Time-Based One time Password (totp)
+#   Docs: https://www.authelia.com/docs/configuration/one-time-password.html
+totp:
+  issuer: authelia.com
+  period: 30
+  skew: 1
+
+# Authentication Backend
+#   Docs: https://www.authelia.com/docs/configuration/authentication/
+authentication_backend:
+  file:
+    path: /config/users/database.yml
+    password:
+      algorithm: argon2id
+      iterations: 1
+      salt_length: 16
+      parallelism: 8
+      memory: 1024 # TODO: Tune this
+
+# Access Control
+#   Docs: https://www.authelia.com/docs/configuration/access-control.html
+access_control:
+  default_policy: deny
+  rules:
+    - domain: authelia.sonofborge.com # TODO: Use env var
+      policy: bypass
+    - domain:
+        - "*.sonofborge.com" # TODO: Use env var
+        - "sonofborge.com" # TODO: Use env var
+      policy: two_factor
+
+# Session
+#   Docs: https://www.authelia.com/docs/configuration/session/
+session:
+  name: authelia_session
+  secret: AUTHELIA_SESSION_SECRET_FILE
+  expiration: 3600 # 1 hour
+  inactivity: 300 # 5 minutes
+  domain: sonofborge.com # TODO: Use env var
+
+# Regulation
+#   Docs: https://www.authelia.com/docs/configuration/regulation.html
+regulation:
+  max_retries: 3
+  find_time: 120 # 2 minutes
+  ban_time: 300 # 5 minutes
+
+# Storage Backend (SQLite)
+#   Docs: https://www.authelia.com/docs/configuration/storage/sqlite.html
+storage:
+  local:
+    path: /config/db.sqlite3
+
+# Notifier (filesystem)
+#   Docs: https://www.authelia.com/docs/configuration/notifier/filesystem.html
+notifier:
+  filesystem:
+    filename: /config/notification.txt
