@@ -38,7 +38,7 @@ services:
     secrets:
       - authelia_jwt_secret
     volumes:
-      - $DOCKER_DIR/authelia:/config
+      - $DOCKER_DIR/appdata/authelia:/config
 
   # Docker Socket Proxy
   #   A security-enhanced proxy for the Docker Socket.
