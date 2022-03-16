@@ -15,6 +15,31 @@ secrets:
     file: $DOCKER_DIR/secrets/authelia_jwt_secret
 
 services:
+  # Authelia
+  #   An open-source full-featured authentication server.
+  #   For more info: https://hub.docker.com/r/authelia/authelia
+  authelia:
+    container_name: authelia
+    environment:
+      - AUTHELIA_JWT_SECRET_FILE=/run/secrets/authelia_jwt_secret
+      - TZ={$TZ}
+    image: authelia/authelia:4.34.4
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.authelia-rtr.entrypoints=https
+      - traefik.http.routers.authelia-rtr.rule=Host(`authelia.$DOMAIN_NAME`)
+      - traefik.http.routers.authelia-rtr.tls=true
+      - traefik.http.routers.authelia-rtr.middlewares=chain-authelia@file
+      - traefik.http.routers.authelia-rtr.service=authelia-svc
+      - traefik.http.services.authelia-svc.loadbalancer.server.port=9091
+    networks:
+      - reverse_proxy
+    restart: unless-stopped
+    secrets:
+      - authelia_jwt_secret
+    volumes:
+      - $DOCKER_DIR/authelia:/config
+
   # Docker Socket Proxy
   #   A security-enhanced proxy for the Docker Socket.
   #   For more info: https://hub.docker.com/r/tecnativa/docker-socket-proxy
