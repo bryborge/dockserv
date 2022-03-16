@@ -1,7 +1,8 @@
 # Users Database
 
 users:
-  sonofborge:
+  encryption_key: 9bd757972ee7f6843c053827538b1b910b7fc9b89928b9e3564a68767681774f
+  local:
     displayname: "Bryan Borgeson"
     password: "$argon2id$v=19$m=65536,t=1,p=8$TVUrYmdsbXRYZ3E1M1dlcg$2EenDBDS3qwxRpYxrVawABvtDm1aNEcLvXfOTPOvAOI"
     email: sonofborge@protonmail.com
