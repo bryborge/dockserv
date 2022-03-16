@@ -5,7 +5,6 @@ port: 9091
 log_level: warn # debug, trace, info
 
 default_redirection_url: https://authelia.sonofborge.com # TODO: Use env var
-jwt_secret: 1Zo6F3nxkEJOUFWExVyykgY10oAaQcq0zQ7cVPZiXDjGf9NOu7TnBbHU5W65quW # TODO: Use AUTHELIA_JWT_SECRET_FILE env var
 
 # Time-Based One time Password (totp)
 #   Docs: https://www.authelia.com/docs/configuration/one-time-password.html
