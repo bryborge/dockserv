@@ -1,0 +1,10 @@
+# Users Database
+
+users:
+  sonofborge:
+    displayname: "Bryan Borgeson"
+    password: "$argon2id$v=19$m=65536,t=1,p=8$TVUrYmdsbXRYZ3E1M1dlcg$2EenDBDS3qwxRpYxrVawABvtDm1aNEcLvXfOTPOvAOI"
+    email: sonofborge@protonmail.com
+    groups:
+      - admins
+      - dev

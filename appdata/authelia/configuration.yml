@@ -18,7 +18,7 @@ totp:
 #   Docs: https://www.authelia.com/docs/configuration/authentication/
 authentication_backend:
   file:
-    path: /config/users/database.yml
+    path: /config/users.yml
     password:
       algorithm: argon2id
       iterations: 1
