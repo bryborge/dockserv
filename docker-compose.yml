@@ -121,10 +121,8 @@ services:
       - traefik.http.middlewares.custom.headers.stsPreload=true
       - traefik.http.middlewares.custom.headers.stsSeconds=315360000
       # Secure Dashboard
-      - traefik.http.routers.traefik-rtr.middlewares=chain-authelia@file
-
-      #      - traefik.http.middlewares.admin.basicauth.usersfile=/shared/.htpasswd
-#      - traefik.http.middlewares.admin.basicauth.removeheader=true
+      - traefik.http.middlewares.admin.basicauth.usersfile=/shared/.htpasswd
+      - traefik.http.middlewares.admin.basicauth.removeheader=true
       # Redirect to https
       - traefik.http.routers.traefik-rtr.entrypoints=http
       - traefik.http.routers.traefik-rtr.middlewares=admin
