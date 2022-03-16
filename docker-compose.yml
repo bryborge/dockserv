@@ -124,16 +124,16 @@ services:
       - traefik.http.middlewares.admin.basicauth.usersfile=/shared/.htpasswd
       - traefik.http.middlewares.admin.basicauth.removeheader=true
       # Redirect to https
-      - traefik.http.routers.traefik.entrypoints=http
-      - traefik.http.routers.traefik.middlewares=admin
-      - traefik.http.routers.traefik.rule=HostRegexp(`{host:.+}`)
+      - traefik.http.routers.traefik-rtr.entrypoints=http
+      - traefik.http.routers.traefik-rtr.middlewares=admin
+      - traefik.http.routers.traefik-rtr.rule=HostRegexp(`{host:.+}`)
       - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
       # Routers
-      - traefik.http.routers.traefik.entrypoints=https
-      - traefik.http.routers.traefik.rule=Host(`traefik.$DOMAIN_NAME`)
+      - traefik.http.routers.traefik-rtr.entrypoints=https
+      - traefik.http.routers.traefik-rtr.rule=Host(`traefik.$DOMAIN_NAME`)
       # Services - API
-      - traefik.http.routers.traefik.service=api@internal
-      - traefik.http.routers.traefik.tls.certresolver=dns-cloudflare
+      - traefik.http.routers.traefik-rtr.service=api@internal
+      - traefik.http.routers.traefik-rtr.tls.certresolver=dns-cloudflare
     networks:
       reverse_proxy:
       socket_proxy:
@@ -177,10 +177,10 @@ services:
       - traefik.http.middlewares.custom.headers.stsIncludeSubdomains=true
       - traefik.http.middlewares.custom.headers.stsPreload=true
       - traefik.http.middlewares.custom.headers.stsSeconds=315360000
-      - traefik.http.routers.plex.entrypoints=https
-      - traefik.http.routers.plex.rule=Host(`plex.$DOMAIN_NAME`)
-      - traefik.http.routers.plex.tls.certresolver=dns-cloudflare
-      - traefik.http.services.plex.loadbalancer.server.port=32400
+      - traefik.http.routers.plex-rtr.entrypoints=https
+      - traefik.http.routers.plex-rtr.rule=Host(`plex.$DOMAIN_NAME`)
+      - traefik.http.routers.plex-rtr.tls.certresolver=dns-cloudflare
+      - traefik.http.services.plex-svc.loadbalancer.server.port=32400
     networks:
       reverse_proxy:
       socket_proxy:
