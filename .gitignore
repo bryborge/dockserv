@@ -16,3 +16,6 @@ secrets/authelia_jwt_secret
 
 # Plex
 appdata/plex/config/Library
+
+# Traefik
+appdata/traefik/log/*.log
