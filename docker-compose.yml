@@ -22,7 +22,8 @@ services:
     container_name: authelia
     environment:
       - AUTHELIA_JWT_SECRET_FILE=/run/secrets/authelia_jwt_secret
-      - TZ={$TZ}
+      - DOMAIN_NAME=${DOMAIN_NAME}
+      - TZ=${TZ}
     image: authelia/authelia:4.34.4
     labels:
       - traefik.enable=true
