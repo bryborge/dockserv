@@ -1,0 +1,8 @@
+users:
+  <USER_NAME_HERE>:
+    displayname: "<YOUR_NAME_HERE>"
+    password: "<ARGON2ID_HASHED_PASSWORD_HERE>"
+    email: <EMAIL_ADDRESS_HERE>
+    groups:
+      - admins
+      - dev

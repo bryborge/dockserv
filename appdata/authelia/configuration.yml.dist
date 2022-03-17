@@ -1,0 +1,70 @@
+# Basic Configuration
+#   Docs: https://www.authelia.com/docs/configuration/
+server:
+  host: 0.0.0.0
+  port: 9091
+
+log:
+  level: warn # debug, trace, info
+
+default_redirection_url: "https://authelia.<DOMAIN_NAME_HERE>.com"
+
+# Time-Based One time Password (totp)
+#   Docs: https://www.authelia.com/docs/configuration/one-time-password.html
+totp:
+  issuer: authelia.com
+  period: 30
+  skew: 1
+
+# Authentication Backend
+#   Docs: https://www.authelia.com/docs/configuration/authentication/
+authentication_backend:
+  file:
+    path: /config/users.yml
+    password:
+      algorithm: argon2id
+      iterations: 1
+      salt_length: 16
+      parallelism: 8
+      memory: 1024
+
+# Access Control
+#   Docs: https://www.authelia.com/docs/configuration/access-control.html
+access_control:
+  default_policy: deny
+  rules:
+    - domain: authelia.<DOMAIN_NAME_HERE>.com
+      policy: bypass
+    - domain:
+        - "*.<DOMAIN_NAME_HERE>.com"
+        - "<DOMAIN_NAME_HERE>.com"
+      policy: two_factor
+
+# Session
+#   Docs: https://www.authelia.com/docs/configuration/session/
+session:
+  name: authelia_session
+  secret: AUTHELIA_SESSION_SECRET_FILE
+  expiration: 3600 # 1 hour
+  inactivity: 300 # 5 minutes
+  domain: <DOMAIN_NAME_HERE>.com
+
+# Regulation
+#   Docs: https://www.authelia.com/docs/configuration/regulation.html
+regulation:
+  max_retries: 3
+  find_time: 120 # 2 minutes
+  ban_time: 300 # 5 minutes
+
+# Storage Backend (SQLite)
+#   Docs: https://www.authelia.com/docs/configuration/storage/sqlite.html
+storage:
+  encryption_key: <ENCRYPTION_KEY_HERE>
+  local:
+    path: /config/db.sqlite3
+
+# Notifier (filesystem)
+#   Docs: https://www.authelia.com/docs/configuration/notifier/filesystem.html
+notifier:
+  filesystem:
+    filename: /config/notification.txt

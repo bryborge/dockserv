@@ -9,5 +9,10 @@ acme.json
 .idea
 .vscode
 
+# Authelia
+appdata/authelia/configuration.yml
+appdata/authelia/users.yml
+secrets/authelia_jwt_secret
+
 # Plex
 appdata/plex/config/Library
