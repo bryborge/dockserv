@@ -13,8 +13,6 @@ networks:
 secrets:
   authelia_jwt_secret:
     file: $DOCKER_DIR/secrets/authelia_jwt_secret
-  authelia_session_secret:
-    file: $DOCKER_DIR/secrets/authelia_session_secret
 
 services:
   # Authelia
