@@ -238,6 +238,9 @@ services:
     entrypoint: redis-server --appendonly yes --requirepass $REDIS_PASSWORD --maxmemory 512mb --maxmemory-policy allkeys-lru
     environment:
       - REDIS_PASSWORD=${REDIS_PASSWORD}
+    networks:
+      reverse_proxy:
+      socket_proxy:
     ports:
       - target: 6379
         published: 6379
