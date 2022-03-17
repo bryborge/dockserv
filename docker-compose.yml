@@ -235,9 +235,7 @@ services:
   redis:
     container_name: redis
     image: redis:latest
-    entrypoint: redis-server --appendonly yes --requirepass $REDIS_PASSWORD --maxmemory 512mb --maxmemory-policy allkeys-lru
-    environment:
-      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    entrypoint: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
     networks:
       reverse_proxy:
       socket_proxy:

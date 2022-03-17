@@ -51,7 +51,6 @@ session:
   redis:
     host: <HOST_HERE>
     port: <PORT_HERE>
-    password: AUTHELIA_SESSION_REDIS_PASSWORD_FILE
 
 # Regulation
 #   Docs: https://www.authelia.com/docs/configuration/regulation.html
