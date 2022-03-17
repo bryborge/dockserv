@@ -7,7 +7,7 @@ server:
 log:
   level: warn # debug, trace, info
 
-default_redirection_url: https://authelia.{{ env DOMAIN_NAME }}
+default_redirection_url: "https://authelia.sonofborge.com"
 
 # Time-Based One time Password (totp)
 #   Docs: https://www.authelia.com/docs/configuration/one-time-password.html
@@ -26,18 +26,18 @@ authentication_backend:
       iterations: 1
       salt_length: 16
       parallelism: 8
-      memory: 1024 # TODO: Tune this
+      memory: 1024
 
 # Access Control
 #   Docs: https://www.authelia.com/docs/configuration/access-control.html
 access_control:
   default_policy: deny
   rules:
-    - domain: authelia.{{ env DOMAIN_NAME }}
+    - domain: authelia.sonofborge.com
       policy: bypass
     - domain:
-        - "*.{{ env DOMAIN_NAME }}"
-        - "{{ env DOMAIN_NAME }}"
+        - "*.sonofborge.com"
+        - "sonofborge.com"
       policy: two_factor
 
 # Session
@@ -47,7 +47,7 @@ session:
   secret: AUTHELIA_SESSION_SECRET_FILE
   expiration: 3600 # 1 hour
   inactivity: 300 # 5 minutes
-  domain: {{ env DOMAIN_NAME }}
+  domain: sonofborge.com
 
 # Regulation
 #   Docs: https://www.authelia.com/docs/configuration/regulation.html
