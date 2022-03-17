@@ -14,3 +14,4 @@ chown root:root secrets/
 ## Files
 
 * authelia_jwt_secret
+* authelia_session_secret

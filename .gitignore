@@ -13,6 +13,7 @@ acme.json
 appdata/authelia/configuration.yml
 appdata/authelia/users.yml
 secrets/authelia_jwt_secret
+secrets/authelia_session_secret
 
 # Plex
 appdata/plex/config/Library

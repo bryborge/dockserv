@@ -48,6 +48,10 @@ session:
   expiration: 3600 # 1 hour
   inactivity: 300 # 5 minutes
   domain: <DOMAIN_NAME_HERE>.com
+  redis:
+    host: <HOST_HERE>
+    port: <PORT_HERE>
+    password: AUTHELIA_SESSION_REDIS_PASSWORD_FILE
 
 # Regulation
 #   Docs: https://www.authelia.com/docs/configuration/regulation.html

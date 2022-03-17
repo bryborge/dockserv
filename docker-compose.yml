@@ -13,6 +13,8 @@ networks:
 secrets:
   authelia_jwt_secret:
     file: $DOCKER_DIR/secrets/authelia_jwt_secret
+  authelia_session_secret:
+    file: $DOCKER_DIR/secrets/authelia_session_secret
 
 services:
   # Authelia
@@ -229,3 +231,17 @@ services:
 #      - $DOCKER_DIR/appdata/plex/config:/config
 #      - $DOCKER_DIR/appdata/plex/tmp:/transcode
 #      - /media/nas/media:/media
+
+  redis:
+    container_name: redis
+    image: redis:latest
+    entrypoint: redis-server --appendonly yes --requirepass $REDIS_PASSWORD --maxmemory 512mb --maxmemory-policy allkeys-lru
+    ports:
+      - target: 6379
+        published: 6379
+        protocol: tcp
+    restart: unless-stopped
+    volumes:
+      - $DOCKER_DIR/appdata/redis/data:/data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
