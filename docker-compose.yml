@@ -235,7 +235,7 @@ services:
     environment:
       - POSTGRES_DB=authelia
       - POSTGRES_USER=authelia
-      - POSTGRES_PASSWORD=#Nkrypt3d
+      - POSTGRES_PASSWORD=#Nkrypt3d!
       - TZ=$TZ
     image: postgres:latest
     networks:
