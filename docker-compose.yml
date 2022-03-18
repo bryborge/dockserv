@@ -46,6 +46,9 @@ services:
   #   For more info: https://hub.docker.com/r/authelia/authelia
   authelia:
     container_name: authelia
+    depends_on:
+      - postgres
+      - redis
     environment:
       - AUTHELIA_JWT_SECRET_FILE=/run/secrets/authelia_jwt_secret
       - DOMAIN_NAME=$DOMAIN_NAME
