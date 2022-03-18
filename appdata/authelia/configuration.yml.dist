@@ -62,12 +62,14 @@ regulation:
 # Storage Backend (SQLite)
 #   Docs: https://www.authelia.com/docs/configuration/storage/sqlite.html
 storage:
-encryption_key: <ENCRYPTION_KEY_HERE>
-  mysql:
-    host: <MYSQL_HOST_HERE>
-    port: 3306
+  encryption_key: <ENCRYPTION_KEY_HERE>
+  postgres:
+    host: <PG_HOST_HERE>
+    port: <PG_PORT_HERE>
     database: authelia
-    username: <MYSQL_USER_HERE>
+    schema: public
+    username: <PG_USER_HERE>
+    password: <PG_PASSWORD_HERE>
 
 # Notifier (filesystem)
 #   Docs: https://www.authelia.com/docs/configuration/notifier/filesystem.html
