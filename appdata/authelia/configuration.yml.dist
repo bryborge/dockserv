@@ -62,9 +62,11 @@ regulation:
 # Storage Backend (SQLite)
 #   Docs: https://www.authelia.com/docs/configuration/storage/sqlite.html
 storage:
-  encryption_key: <ENCRYPTION_KEY_HERE>
-  local:
-    path: /config/db.sqlite3
+  mysql:
+    host: <MYSQL_HOST_HERE>
+    port: 3306
+    database: authelia
+    username: <MYSQL_USER_HERE>
 
 # Notifier (filesystem)
 #   Docs: https://www.authelia.com/docs/configuration/notifier/filesystem.html

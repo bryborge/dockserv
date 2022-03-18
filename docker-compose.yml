@@ -22,8 +22,9 @@ services:
     container_name: authelia
     environment:
       - AUTHELIA_JWT_SECRET_FILE=/run/secrets/authelia_jwt_secret
-      - DOMAIN_NAME=${DOMAIN_NAME}
-      - TZ=${TZ}
+      - AUTHELIA_STORAGE_MYSQL_PASSWORD_FILE=/run/secrets/authelia_storage_mysql_password
+      - DOMAIN_NAME=$DOMAIN_NAME
+      - TZ=$TZ
     image: authelia/authelia:4.34.4
     labels:
       - traefik.enable=true
@@ -38,6 +39,7 @@ services:
     restart: unless-stopped
     secrets:
       - authelia_jwt_secret
+      - authelia_storage_mysql_password
     volumes:
       - $DOCKER_DIR/appdata/authelia:/config
 
@@ -229,6 +231,26 @@ services:
       - $DOCKER_DIR/appdata/plex/config:/config
       - $DOCKER_DIR/appdata/plex/tmp:/transcode
       - /media/nas/media:/media
+
+  mysql:
+    container_name: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD
+      - TZ=$TZ
+    image: mysql:latest
+    networks:
+      reverse_proxy:
+      socket_proxy:
+    ports:
+      - target: 3306
+        published: 3306
+        protocol: tcp
+        mode: host
+    restart: unless-stopped
+    secrets:
+      - mysql_root_password
+    volumes:
+      - $DOCKER_DIR/appdata/mysql/data:/config
 
   redis:
     container_name: redis
