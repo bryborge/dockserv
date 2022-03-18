@@ -13,6 +13,10 @@ networks:
 secrets:
   authelia_jwt_secret:
     file: $DOCKER_DIR/secrets/authelia_jwt_secret
+  authelia_storage_mysql_password:
+    file: $DOCKER_DIR/secrets/authelia_storage_mysql_password
+  mysql_root_password:
+    file: $DOCKER_DIR/secrets/mysql_root_password
 
 services:
   # Authelia
@@ -235,12 +239,11 @@ services:
   mysql:
     container_name: mysql
     environment:
-      - MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD
+      - MYSQL_ROOT_PASSWORD=/run/secrets/mysql_root_password
       - TZ=$TZ
     image: mysql:latest
     networks:
       reverse_proxy:
-      socket_proxy:
     ports:
       - target: 3306
         published: 3306
@@ -258,7 +261,6 @@ services:
     entrypoint: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
     networks:
       reverse_proxy:
-      socket_proxy:
     ports:
       - target: 6379
         published: 6379

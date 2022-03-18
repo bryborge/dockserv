@@ -62,6 +62,7 @@ regulation:
 # Storage Backend (SQLite)
 #   Docs: https://www.authelia.com/docs/configuration/storage/sqlite.html
 storage:
+encryption_key: <ENCRYPTION_KEY_HERE>
   mysql:
     host: <MYSQL_HOST_HERE>
     port: 3306
