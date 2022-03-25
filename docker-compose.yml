@@ -124,9 +124,6 @@ services:
       - traefik.http.middlewares.custom.headers.stsIncludeSubdomains=true
       - traefik.http.middlewares.custom.headers.stsPreload=true
       - traefik.http.middlewares.custom.headers.stsSeconds=315360000
-      # Secure Dashboard
-      - traefik.http.middlewares.admin.basicauth.usersfile=/shared/.htpasswd
-      - traefik.http.middlewares.admin.basicauth.removeheader=true
       # Redirect to https
       - traefik.http.routers.traefik-rtr.entrypoints=http
       - traefik.http.routers.traefik-rtr.middlewares=admin
@@ -135,6 +132,8 @@ services:
       # Routers
       - traefik.http.routers.traefik-rtr.entrypoints=https
       - traefik.http.routers.traefik-rtr.rule=Host(`traefik.$DOMAIN_NAME`)
+      # Secure Dashboard w/ Authelia
+      - traefik.http.routers.traefik-rtr.middlewares=chain-authelia@file
       # Services - API
       - traefik.http.routers.traefik-rtr.service=api@internal
       - traefik.http.routers.traefik-rtr.tls.certresolver=dns-cloudflare
