@@ -57,8 +57,6 @@ services:
     depends_on:
       - postgres
       - redis
-    env_file:
-      - ${DOCKER_DIR}/.env
     environment:
       - AUTHELIA_JWT_SECRET_FILE=/run/secrets/authelia_jwt_secret
       - AUTHELIA_SESSION_REDIS_PASSWORD_FILE=/run/secrets/authelia_session_redis_password
@@ -124,8 +122,6 @@ services:
       - --providers.file.directory=/etc/traefik/rules
       - --providers.file.watch=true # watch top-level rules/ dir for file changes
     container_name: traefik
-    env_file:
-      - ${DOCKER_DIR}/.env
     environment:
       - ADGUARD_IP=${ADGUARD_IP}
       - ADGUARD_PORT=${ADGUARD_PORT}
@@ -252,8 +248,6 @@ services:
 
   postgres:
     container_name: postgres
-    env_file:
-      - ${DOCKER_DIR}/.env
     environment:
       - POSTGRES_USER=authelia
       - POSTGRES_PASSWORD=/run/secrets/authelia_storage_postgres_password
