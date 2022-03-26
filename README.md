@@ -42,27 +42,14 @@ deploying to.
     cp .env{.dist,}
     ```
 
-3.  Currently this project is setup to use basic authentication.
-    To set that up,
-    you need to generate a `username:hashed-password` string which will be stored in the `shared/` directory.
-    There are
-    [websites](https://www.web2generators.com/apache-tools/htpasswd-generator)
-    that can help you generate this value,
-    or you can use the `htpasswd` utility which can be found in the
-    [apache2-utils](https://packages.ubuntu.com/bionic/apache2-utils) library.
-
-    ```shell
-    htpasswd -nB $USER >> ./shared/.htpasswd
-    ```
-
-4.  Create the docker networks.
+3.  Create the docker networks.
 
     ```shell
     docker network create reverse_proxy
     docker network create socket_proxy
     ```
 
-5.  Spin up some or all of your server applications with docker-compose.
+4.  Spin up some or all of your server applications with docker-compose.
 
     ```shell
     # Example: specific individual applications
