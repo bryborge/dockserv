@@ -1,23 +1,22 @@
-# Basic Configuration
+##
+# Authelia Configuration
 #   Docs: https://www.authelia.com/docs/configuration/
 server:
   host: 0.0.0.0
   port: 9091
 
+theme: dark
+
 log:
   level: warn # debug, trace, info
 
-default_redirection_url: "https://authelia.<DOMAIN_NAME_HERE>.com"
+default_redirection_url: "https://authelia.<DOMAIN_NAME>.com"
 
-# Time-Based One time Password (totp)
-#   Docs: https://www.authelia.com/docs/configuration/one-time-password.html
 totp:
   issuer: authelia.com
   period: 30
   skew: 1
 
-# Authentication Backend
-#   Docs: https://www.authelia.com/docs/configuration/authentication/
 authentication_backend:
   file:
     path: /config/users.yml
@@ -28,51 +27,42 @@ authentication_backend:
       parallelism: 8
       memory: 1024
 
-# Access Control
-#   Docs: https://www.authelia.com/docs/configuration/access-control.html
 access_control:
   default_policy: deny
   rules:
-    - domain: authelia.<DOMAIN_NAME_HERE>.com
+    - domain: authelia.<DOMAIN_NAME>.com
       policy: bypass
     - domain:
-        - "*.<DOMAIN_NAME_HERE>.com"
-        - "<DOMAIN_NAME_HERE>.com"
+        - "*.<DOMAIN_NAME>.com"
+        - "<DOMAIN_NAME>.com"
       policy: two_factor
 
-# Session
-#   Docs: https://www.authelia.com/docs/configuration/session/
 session:
   name: authelia_session
   secret: AUTHELIA_SESSION_SECRET_FILE
   expiration: 3600 # 1 hour
   inactivity: 300 # 5 minutes
-  domain: <DOMAIN_NAME_HERE>.com
+  domain: <DOMAIN_NAME>.com
   redis:
-    host: <HOST_HERE>
-    port: <PORT_HERE>
+    host: redis
+    port: 6379
+    password: AUTHELIA_SESSION_REDIS_PASSWORD_FILE
 
-# Regulation
-#   Docs: https://www.authelia.com/docs/configuration/regulation.html
 regulation:
   max_retries: 3
   find_time: 120 # 2 minutes
   ban_time: 300 # 5 minutes
 
-# Storage Backend (SQLite)
-#   Docs: https://www.authelia.com/docs/configuration/storage/sqlite.html
 storage:
-  encryption_key: <ENCRYPTION_KEY_HERE>
+  encryption_key: AUTHELIA_STORAGE_ENCRYPTION_KEY_FILE
   postgres:
-    host: <PG_HOST_HERE>
-    port: <PG_PORT_HERE>
+    host: postgres
+    port: 5432
     database: authelia
     schema: public
-    username: <PG_USER_HERE>
-    password: <PG_PASSWORD_HERE>
+    username: authelia
+    password: AUTHELIA_STORAGE_POSTGRES_PASSWORD_FILE
 
-# Notifier (filesystem)
-#   Docs: https://www.authelia.com/docs/configuration/notifier/filesystem.html
 notifier:
   filesystem:
     filename: /config/notification.txt

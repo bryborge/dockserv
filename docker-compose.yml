@@ -12,7 +12,15 @@ networks:
 
 secrets:
   authelia_jwt_secret:
-    file: $DOCKER_DIR/secrets/authelia_jwt_secret
+    file: ${DOCKER_DIR}/secrets/authelia_jwt_secret
+  authelia_session_redis_password:
+    file: ${DOCKER_DIR}/secrets/authelia_session_redis_password
+  authelia_session_secret:
+    file: ${DOCKER_DIR}/secrets/authelia_session_secret
+  authelia_storage_encryption_key:
+    file: ${DOCKER_DIR}/secrets/authelia_storage_encryption_key
+  authelia_storage_postgres_password:
+    file: ${DOCKER_DIR}/secrets/authelia_storage_postgres_password
 
 services:
   # Docker Socket Proxy
@@ -49,15 +57,21 @@ services:
     depends_on:
       - postgres
       - redis
+    env_file:
+      - ${DOCKER_DIR}/.env
     environment:
       - AUTHELIA_JWT_SECRET_FILE=/run/secrets/authelia_jwt_secret
-      - DOMAIN_NAME=$DOMAIN_NAME
-      - TZ=$TZ
+      - AUTHELIA_SESSION_REDIS_PASSWORD_FILE=/run/secrets/authelia/session_redis_password
+      - AUTHELIA_SESSION_SECRET_FILE=/run/secrets/authelia_session_secret
+      - AUTHELIA_STORAGE_ENCRYPTION_KEY_FILE=/run/secrets/authelia_storage_encryption_key
+      - AUTHELIA_STORAGE_POSTGRES_PASSWORD_FILE=/run/secrets/authelia_storage_postgres_password
+      - DOMAIN_NAME=${DOMAIN_NAME}
+      - TZ=${TZ}
     image: authelia/authelia:4.34.4
     labels:
       - traefik.enable=true
       - traefik.http.routers.authelia-rtr.entrypoints=https
-      - traefik.http.routers.authelia-rtr.rule=Host(`authelia.$DOMAIN_NAME`)
+      - traefik.http.routers.authelia-rtr.rule=Host(`authelia.${DOMAIN_NAME}`)
       - traefik.http.routers.authelia-rtr.tls=true
       - traefik.http.routers.authelia-rtr.middlewares=chain-authelia@file
       - traefik.http.routers.authelia-rtr.service=authelia-svc
@@ -67,8 +81,12 @@ services:
     restart: unless-stopped
     secrets:
       - authelia_jwt_secret
+      - authelia_session_redis_password
+      - authelia_session_secret
+      - authelia_storage_encryption_key
+      - authelia_storage_postgres_password
     volumes:
-      - $DOCKER_DIR/appdata/authelia:/config
+      - ${DOCKER_DIR}/appdata/authelia:/config
 
   # Traefik
   #   An Open Source Edge Router that makes publishing your services a fun and easy experience.
@@ -93,8 +111,8 @@ services:
       - --entryPoints.https.address=:443
       - --entryPoints.traefik.address=:8080
       - --entryPoints.https.http.tls.certresolver=dns-cloudflare
-      - --entryPoints.https.http.tls.domains[0].main=$DOMAIN_NAME
-      - --entryPoints.https.http.tls.domains[0].sans=*.$DOMAIN_NAME
+      - --entryPoints.https.http.tls.domains[0].main=${DOMAIN_NAME}
+      - --entryPoints.https.http.tls.domains[0].sans=*.${DOMAIN_NAME}
       - --global.checkNewVersion=true
       - --global.sendAnonymousUsage=false
       - --log=true
@@ -131,7 +149,7 @@ services:
       - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
       # Routers
       - traefik.http.routers.traefik-rtr.entrypoints=https
-      - traefik.http.routers.traefik-rtr.rule=Host(`traefik.$DOMAIN_NAME`)
+      - traefik.http.routers.traefik-rtr.rule=Host(`traefik.${DOMAIN_NAME}`)
       # Secure Dashboard w/ Authelia
       - traefik.http.routers.traefik-rtr.middlewares=chain-authelia@file
       # Services - API
@@ -151,10 +169,10 @@ services:
         mode: host
     restart: unless-stopped
     volumes:
-      - $DOCKER_DIR/appdata/traefik/rules:/etc/traefik/rules
-      - $DOCKER_DIR/appdata/traefik/acme:/etc/traefik/acme
-      - $DOCKER_DIR/appdata/traefik/log:/etc/traefik/log
-      - $DOCKER_DIR/shared:/shared
+      - ${DOCKER_DIR}/appdata/traefik/rules:/etc/traefik/rules
+      - ${DOCKER_DIR}/appdata/traefik/acme:/etc/traefik/acme
+      - ${DOCKER_DIR}/appdata/traefik/log:/etc/traefik/log
+      - ${DOCKER_DIR}/shared:/shared
 
   # Plex
   #   A global streaming media service and client-server media platform.
@@ -181,7 +199,7 @@ services:
       - traefik.http.middlewares.custom.headers.stsPreload=true
       - traefik.http.middlewares.custom.headers.stsSeconds=315360000
       - traefik.http.routers.plex-rtr.entrypoints=https
-      - traefik.http.routers.plex-rtr.rule=Host(`plex.$DOMAIN_NAME`)
+      - traefik.http.routers.plex-rtr.rule=Host(`plex.${DOMAIN_NAME}`)
       - traefik.http.routers.plex-rtr.tls.certresolver=dns-cloudflare
       - traefik.http.services.plex-svc.loadbalancer.server.port=32400
     networks:
@@ -228,18 +246,19 @@ services:
         protocol: udp
         mode: host
     volumes:
-      - $DOCKER_DIR/appdata/plex/config:/config
-      - $DOCKER_DIR/appdata/plex/tmp:/transcode
+      - ${DOCKER_DIR}/appdata/plex/config:/config
+      - ${DOCKER_DIR}/appdata/plex/tmp:/transcode
       - /media/nas/media:/media
 
   postgres:
     container_name: postgres
+    env_file:
+      - ${DOCKER_DIR}/.env
     environment:
-      - POSTGRES_DB=authelia
       - POSTGRES_USER=authelia
-      - POSTGRES_PASSWORD=#Nkrypt3d!
-      - TZ=$TZ
-    image: postgres:latest
+      - POSTGRES_PASSWORD=/run/secrets/authelia_storage_postgres_password
+      - TZ=${TZ}
+    image: postgres:12.10
     networks:
       reverse_proxy:
     ports:
@@ -248,13 +267,17 @@ services:
         protocol: tcp
         mode: host
     restart: unless-stopped
+    secrets:
+      - authelia_storage_postgres_password
     volumes:
-      - $DOCKER_DIR/appdata/mysql/data:/config
+      - ${DOCKER_DIR}/appdata/postgres/data:/config
 
   redis:
     container_name: redis
-    image: redis:latest
-    entrypoint: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
+    entrypoint: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD} --maxmemory 512mb --maxmemory-policy allkeys-lru
+    environment:
+      - REDIS_PASSWORD=/run/secrets/authelia_session_redis_password
+    image: redis:6.2.6
     networks:
       reverse_proxy:
     ports:
@@ -262,7 +285,9 @@ services:
         published: 6379
         protocol: tcp
     restart: unless-stopped
+    secrets:
+      - authelia_session_redis_password
     volumes:
-      - $DOCKER_DIR/appdata/redis/data:/data
+      - ${DOCKER_DIR}/appdata/redis/data:/data
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
