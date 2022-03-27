@@ -18,8 +18,6 @@ main() {
     ensure_secret_exists $f
   done
 
-  lockdown_secrets
-
   echo "Finished."
 }
 
@@ -62,16 +60,6 @@ generate_secret() {
 
   echo "'$1' secret has been generated."
   printf "\n"
-}
-
-##
-# Set the secrets directory to be owned by root and for it to only be readable
-# and writable by root.
-#
-lockdown_secrets() {
-  echo "Locking down secrets directory."
-  sudo chown -R root:root ./secrets
-  sudo chmod -R 600 ./secrets
 }
 
 main # Make it so.
