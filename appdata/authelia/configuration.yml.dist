@@ -52,7 +52,6 @@ regulation:
   ban_time: 300 # 5 minutes
 
 storage:
-  encryption_key: AUTHELIA_STORAGE_ENCRYPTION_KEY_FILE
   postgres:
     host: postgres
     port: 5432
