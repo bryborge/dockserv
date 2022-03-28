@@ -7,10 +7,12 @@ set -euo pipefail
 #
 main() {
   pushd ./appdata/authelia > /dev/null 2>&1
-
   generate_config_file
   generate_user_file
+  popd > /dev/null 2>&1
 
+  pushd ./traefik/rules > /dev/null 2>&1
+  update_middlewares_rules
   popd > /dev/null 2>&1
 
   echo "Done."
@@ -50,6 +52,16 @@ generate_user_file() {
   search_replace_prompt "Argon2id Hash: " "<ARGON2ID_HASHED_PASSWORD_HERE>" users.yml
 
   echo "Authelia user.yml file created!"
+  printf "\n"
+}
+
+update_middlewares_rules() {
+  echo "Altering Authelia middlewares rules file ..."
+  printf "\n"
+
+  echo "Please enter your domain name (again). (ex: domain.com)"
+  search_replace_prompt "Domain Name: " "<DOMAIN_NAME>" web-middlewares.yml
+  echo "Authelia middlewares rules updated!"
   printf "\n"
 }
 

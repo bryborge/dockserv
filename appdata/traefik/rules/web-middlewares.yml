@@ -33,7 +33,7 @@ http:
 
     middlewares-authelia:
       forwardAuth:
-        address: "http://authelia:9091/api/verify?rd=https://authelia.sonofborge.com"
+        address: "http://authelia:9091/api/verify?rd=https://authelia.<DOMAIN_NAME>"
         trustForwardHeader: true
         authResponseHeaders:
           - "Remote-User"
