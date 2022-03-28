@@ -46,7 +46,7 @@ generate_user_file() {
   echo "Please enter your email."
   search_replace_prompt "Email: " "<EMAIL_ADDRESS_HERE>" users.yml
 
-  echo "Please enter your argon2id hash. (https://argon2.online/)"
+  echo "Please enter your argon2id hash."
   search_replace_prompt "Argon2id Hash: " "<ARGON2ID_HASHED_PASSWORD_HERE>" users.yml
 
   echo "Authelia user.yml file created!"

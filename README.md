@@ -54,6 +54,12 @@ deploying to.
     ```shell
     bash scripts/authelia-set-config.sh
     ```
+   
+    You will be asked for an argon2id hash. To generate one, run the following.
+
+    ```shell
+    docker run authelia/authelia:latest authelia hash-password '<password>'
+    ```
 
 5.  Run the Secrets generation script and follow the on-screen instructions.
 
