@@ -94,7 +94,8 @@ deploying to.
 
 8.  If you're logging into Authelia for the first time, you'll need to setup totp.
     After you've added your credentials, click on "Not registered yet?" and follow the instructions to register another
-    device for authorization. The email it sends can be found in `appdata/authelia/notifications.txt`.
+    device for authorization.
+    The email it sends can be found in `appdata/authelia/notifications.txt`.
     
 
 ## License
