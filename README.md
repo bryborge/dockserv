@@ -42,27 +42,32 @@ deploying to.
     cp .env{.dist,}
     ```
 
-3.  Currently this project is setup to use basic authentication.
-    To set that up,
-    you need to generate a `username:hashed-password` string which will be stored in the `shared/` directory.
-    There are
-    [websites](https://www.web2generators.com/apache-tools/htpasswd-generator)
-    that can help you generate this value,
-    or you can use the `htpasswd` utility which can be found in the
-    [apache2-utils](https://packages.ubuntu.com/bionic/apache2-utils) library.
-
-    ```shell
-    htpasswd -nB $USER >> ./shared/.htpasswd
-    ```
-
-4.  Create the docker networks.
+3.  Create the docker networks.
 
     ```shell
     docker network create reverse_proxy
     docker network create socket_proxy
     ```
 
-5.  Spin up some or all of your server applications with docker-compose.
+4.  Run the Authelia configuration setup script and follow the on-screen instructions.
+
+    ```shell
+    bash scripts/authelia-set-config.sh
+    ```
+   
+    You will be asked for an argon2id hash. To generate one, run the following.
+
+    ```shell
+    docker run authelia/authelia:latest authelia hash-password '<password>'
+    ```
+
+5.  Run the Secrets generation script and follow the on-screen instructions.
+
+    ```shell
+    bash scripts/gen-secrets.sh
+    ```
+
+6.  Spin up some or all of your server applications with docker-compose.
 
     ```shell
     # Example: specific individual applications
@@ -74,6 +79,24 @@ deploying to.
     # Example: all applications
     docker-compose up -d
     ```
+
+7.  Create the authelia user's database password.
+
+    ```shell
+    docker-compose exec postgres psql -U authelia
+    ```
+    ```shell
+    ALTER ROLE authelia WITH PASSWORD '<password>';
+    \q
+    ```
+
+    You may need to recreate the authelia container.
+
+8.  If you're logging into Authelia for the first time, you'll need to setup totp.
+    After you've added your credentials, click on "Not registered yet?" and follow the instructions to register another
+    device for authorization.
+    The email it sends can be found in `appdata/authelia/notifications.txt`.
+    
 
 ## License
 

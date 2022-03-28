@@ -1,6 +1,5 @@
 # Environment
 .env
-.htpasswd
 
 # Certs
 acme.json
@@ -9,5 +8,16 @@ acme.json
 .idea
 .vscode
 
+# Authelia
+appdata/authelia/configuration.yml
+appdata/authelia/users.yml
+secrets/authelia_*
+
 # Plex
 appdata/plex/config/Library
+
+# Redis
+appdata/redis/data/*.aof
+
+# Traefik
+appdata/traefik/log/*.log
