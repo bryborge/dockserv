@@ -63,7 +63,8 @@ generate_user_file() {
 #
 search_replace_prompt() {
   read -p "$1" opt
-  sed -i "s/$2/$opt/" $3
+  # using ':' delimiter due to argon2id using /'s and ='s
+  sed -i "s:$2:$opt:" $3
   printf "\n"
 }
 
