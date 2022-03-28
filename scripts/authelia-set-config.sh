@@ -61,6 +61,7 @@ update_middlewares_rules() {
 
   echo "Please enter your domain name (again). (ex: domain.com)"
   search_replace_prompt "Domain Name: " "<DOMAIN_NAME>" web-middlewares.yml
+
   echo "Authelia middlewares rules updated!"
   printf "\n"
 }
