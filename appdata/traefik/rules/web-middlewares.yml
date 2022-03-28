@@ -1,0 +1,43 @@
+http:
+  middlewares:
+    middlewares-rate-limit:
+      rateLimit:
+        average: 100
+        burst: 50
+
+    middlewares-https-redirectscheme:
+      redirectScheme:
+        scheme: https
+        permanent: true
+
+    middlewares-secure-headers:
+      headers:
+        accessControlAllowMethods:
+          - GET
+          - OPTIONS
+          - PUT
+        accessControlMaxAge: 100
+        hostsProxyHeaders:
+          - "X-Forwarded-Host"
+        stsSeconds: 63072000
+        stsIncludeSubdomains: true
+        stsPreload: true
+        forceSTSHeader: true
+        contentTypeNosniff: true
+        browserXssFilter: true
+        referrerPolicy: "same-origin"
+        permissionsPolicy: "camera=(), microphone=(), geolocation=(), payment=(), usb=(), vr=()"
+        customResponseHeaders:
+          X-Robots-Tag: "none,noarchive,nosnippet,notranslate,noimageindex"
+          server: ""
+
+    middlewares-authelia:
+      forwardAuth:
+        address: "http://authelia:9091/api/verify?rd=https://authelia.<DOMAIN_NAME>"
+        trustForwardHeader: true
+        authResponseHeaders:
+          - "Remote-User"
+          - "Remote-Groups"
+
+    middlewares-compress:
+      compress: {}

@@ -10,6 +10,18 @@ networks:
     driver: bridge
     name: socket_proxy
 
+secrets:
+  authelia_jwt_secret:
+    file: ${DOCKER_DIR}/secrets/authelia_jwt_secret
+  authelia_session_redis_password:
+    file: ${DOCKER_DIR}/secrets/authelia_session_redis_password
+  authelia_session_secret:
+    file: ${DOCKER_DIR}/secrets/authelia_session_secret
+  authelia_storage_encryption_key:
+    file: ${DOCKER_DIR}/secrets/authelia_storage_encryption_key
+  authelia_storage_postgres_password:
+    file: ${DOCKER_DIR}/secrets/authelia_storage_postgres_password
+
 services:
   # Docker Socket Proxy
   #   A security-enhanced proxy for the Docker Socket.
@@ -37,6 +49,43 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
+  # Authelia
+  #   An open-source full-featured authentication server.
+  #   For more info: https://hub.docker.com/r/authelia/authelia
+  authelia:
+    container_name: authelia
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      - AUTHELIA_JWT_SECRET_FILE=/run/secrets/authelia_jwt_secret
+      - AUTHELIA_SESSION_REDIS_PASSWORD_FILE=/run/secrets/authelia_session_redis_password
+      - AUTHELIA_SESSION_SECRET_FILE=/run/secrets/authelia_session_secret
+      - AUTHELIA_STORAGE_ENCRYPTION_KEY_FILE=/run/secrets/authelia_storage_encryption_key
+      - AUTHELIA_STORAGE_POSTGRES_PASSWORD_FILE=/run/secrets/authelia_storage_postgres_password
+      - DOMAIN_NAME=${DOMAIN_NAME}
+      - TZ=${TZ}
+    image: authelia/authelia:4.34.4
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.authelia-rtr.entrypoints=https
+      - traefik.http.routers.authelia-rtr.rule=Host(`authelia.${DOMAIN_NAME}`)
+      - traefik.http.routers.authelia-rtr.tls=true
+      - traefik.http.routers.authelia-rtr.middlewares=chain-authelia@file
+      - traefik.http.routers.authelia-rtr.service=authelia-svc
+      - traefik.http.services.authelia-svc.loadbalancer.server.port=9091
+    networks:
+      - reverse_proxy
+    restart: unless-stopped
+    secrets:
+      - authelia_jwt_secret
+      - authelia_session_redis_password
+      - authelia_session_secret
+      - authelia_storage_encryption_key
+      - authelia_storage_postgres_password
+    volumes:
+      - ${DOCKER_DIR}/appdata/authelia:/config
+
   # Traefik
   #   An Open Source Edge Router that makes publishing your services a fun and easy experience.
   #   For more info:
@@ -60,8 +109,8 @@ services:
       - --entryPoints.https.address=:443
       - --entryPoints.traefik.address=:8080
       - --entryPoints.https.http.tls.certresolver=dns-cloudflare
-      - --entryPoints.https.http.tls.domains[0].main=$DOMAIN_NAME
-      - --entryPoints.https.http.tls.domains[0].sans=*.$DOMAIN_NAME
+      - --entryPoints.https.http.tls.domains[0].main=${DOMAIN_NAME}
+      - --entryPoints.https.http.tls.domains[0].sans=*.${DOMAIN_NAME}
       - --global.checkNewVersion=true
       - --global.sendAnonymousUsage=false
       - --log=true
@@ -73,8 +122,6 @@ services:
       - --providers.file.directory=/etc/traefik/rules
       - --providers.file.watch=true # watch top-level rules/ dir for file changes
     container_name: traefik
-    env_file:
-      - ${DOCKER_DIR}/.env
     environment:
       - ADGUARD_IP=${ADGUARD_IP}
       - ADGUARD_PORT=${ADGUARD_PORT}
@@ -91,20 +138,19 @@ services:
       - traefik.http.middlewares.custom.headers.stsIncludeSubdomains=true
       - traefik.http.middlewares.custom.headers.stsPreload=true
       - traefik.http.middlewares.custom.headers.stsSeconds=315360000
-      # Secure Dashboard
-      - traefik.http.middlewares.admin.basicauth.usersfile=/shared/.htpasswd
-      - traefik.http.middlewares.admin.basicauth.removeheader=true
       # Redirect to https
-      - traefik.http.routers.traefik.entrypoints=http
-      - traefik.http.routers.traefik.middlewares=admin
-      - traefik.http.routers.traefik.rule=HostRegexp(`{host:.+}`)
+      - traefik.http.routers.traefik-rtr.entrypoints=http
+      - traefik.http.routers.traefik-rtr.middlewares=admin
+      - traefik.http.routers.traefik-rtr.rule=HostRegexp(`{host:.+}`)
       - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
       # Routers
-      - traefik.http.routers.traefik.entrypoints=https
-      - traefik.http.routers.traefik.rule=Host(`traefik.$DOMAIN_NAME`)
+      - traefik.http.routers.traefik-rtr.entrypoints=https
+      - traefik.http.routers.traefik-rtr.rule=Host(`traefik.${DOMAIN_NAME}`)
+      # Secure Dashboard w/ Authelia
+      - traefik.http.routers.traefik-rtr.middlewares=chain-authelia@file
       # Services - API
-      - traefik.http.routers.traefik.service=api@internal
-      - traefik.http.routers.traefik.tls.certresolver=dns-cloudflare
+      - traefik.http.routers.traefik-rtr.service=api@internal
+      - traefik.http.routers.traefik-rtr.tls.certresolver=dns-cloudflare
     networks:
       reverse_proxy:
       socket_proxy:
@@ -119,10 +165,9 @@ services:
         mode: host
     restart: unless-stopped
     volumes:
-      - $DOCKER_DIR/appdata/traefik/rules:/etc/traefik/rules
-      - $DOCKER_DIR/appdata/traefik/acme:/etc/traefik/acme
-      - $DOCKER_DIR/appdata/traefik/log:/etc/traefik/log
-      - $DOCKER_DIR/shared:/shared
+      - ${DOCKER_DIR}/appdata/traefik/rules:/etc/traefik/rules
+      - ${DOCKER_DIR}/appdata/traefik/acme:/etc/traefik/acme
+      - ${DOCKER_DIR}/appdata/traefik/log:/etc/traefik/log
 
   # Plex
   #   A global streaming media service and client-server media platform.
@@ -148,10 +193,10 @@ services:
       - traefik.http.middlewares.custom.headers.stsIncludeSubdomains=true
       - traefik.http.middlewares.custom.headers.stsPreload=true
       - traefik.http.middlewares.custom.headers.stsSeconds=315360000
-      - traefik.http.routers.plex.entrypoints=https
-      - traefik.http.routers.plex.rule=Host(`plex.$DOMAIN_NAME`)
-      - traefik.http.routers.plex.tls.certresolver=dns-cloudflare
-      - traefik.http.services.plex.loadbalancer.server.port=32400
+      - traefik.http.routers.plex-rtr.entrypoints=https
+      - traefik.http.routers.plex-rtr.rule=Host(`plex.${DOMAIN_NAME}`)
+      - traefik.http.routers.plex-rtr.tls.certresolver=dns-cloudflare
+      - traefik.http.services.plex-svc.loadbalancer.server.port=32400
     networks:
       reverse_proxy:
       socket_proxy:
@@ -196,6 +241,46 @@ services:
         protocol: udp
         mode: host
     volumes:
-      - $DOCKER_DIR/appdata/plex/config:/config
-      - $DOCKER_DIR/appdata/plex/tmp:/transcode
+      - ${DOCKER_DIR}/appdata/plex/config:/config
+      - ${DOCKER_DIR}/appdata/plex/tmp:/transcode
       - /media/nas/media:/media
+
+  postgres:
+    container_name: postgres
+    environment:
+      - POSTGRES_USER=authelia
+      - POSTGRES_PASSWORD=/run/secrets/authelia_storage_postgres_password
+      - TZ=${TZ}
+    image: postgres:12.10
+    networks:
+      reverse_proxy:
+    ports:
+      - target: 5432
+        published: 5432
+        protocol: tcp
+        mode: host
+    restart: unless-stopped
+    secrets:
+      - authelia_storage_postgres_password
+    volumes:
+      - ${DOCKER_DIR}/appdata/postgres/data:/config
+
+  redis:
+    container_name: redis
+    entrypoint: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD} --maxmemory 512mb --maxmemory-policy allkeys-lru
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    image: redis:6.2.6
+    networks:
+      reverse_proxy:
+    ports:
+      - target: 6379
+        published: 6379
+        protocol: tcp
+    restart: unless-stopped
+    secrets:
+      - authelia_session_redis_password
+    volumes:
+      - ${DOCKER_DIR}/appdata/redis/data:/data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro

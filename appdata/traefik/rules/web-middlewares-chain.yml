@@ -1,0 +1,10 @@
+http:
+  middlewares:
+    chain-authelia:
+      chain:
+        middlewares:
+          - middlewares-rate-limit
+          - middlewares-https-redirectscheme
+          - middlewares-secure-headers
+          - middlewares-authelia
+          - middlewares-compress
