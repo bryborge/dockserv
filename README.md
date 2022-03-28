@@ -90,7 +90,12 @@ deploying to.
     \q
     ```
 
-    You may need to restart or recreate the authelia container.
+    You may need to recreate the authelia container.
+
+8.  If you're logging into Authelia for the first time, you'll need to setup totp.
+    After you've added your credentials, click on "Not registered yet?" and follow the instructions to register another
+    device for authorization.
+    
 
 ## License
 
