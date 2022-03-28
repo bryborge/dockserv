@@ -49,7 +49,19 @@ deploying to.
     docker network create socket_proxy
     ```
 
-4.  Spin up some or all of your server applications with docker-compose.
+4.  Run the Authelia configuration setup script and follow the on-screen instructions.
+
+    ```shell
+    bash scripts/authelia-set-config.sh
+    ```
+
+5.  Run the Secrets generation script and follow the on-screen instructions.
+
+    ```shell
+    bash scripts/gen-secrets.sh
+    ```
+
+6.  Spin up some or all of your server applications with docker-compose.
 
     ```shell
     # Example: specific individual applications
@@ -61,6 +73,18 @@ deploying to.
     # Example: all applications
     docker-compose up -d
     ```
+
+7.  Create the authelia user's database password.
+
+    ```shell
+    docker-compose exec postgres psql -U authelia
+    ```
+    ```shell
+    ALTER ROLE authelia WITH PASSWORD '<password>';
+    \q
+    ```
+
+    You may need to restart or recreate the authelia container.
 
 ## License
 

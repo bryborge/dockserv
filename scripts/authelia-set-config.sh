@@ -2,10 +2,6 @@
 
 set -euo pipefail
 
-# Merge after:
-#  1. this script is complete
-#  2. README is up to date with how to run these scripts and steps to set the postgres db password
-
 ##
 # Primary instructions.
 #
