@@ -11,7 +11,7 @@ main() {
   generate_user_file
   popd > /dev/null 2>&1
 
-  pushd ./traefik/rules > /dev/null 2>&1
+  pushd ./appdata/traefik/rules > /dev/null 2>&1
   update_middlewares_rules
   popd > /dev/null 2>&1
 
