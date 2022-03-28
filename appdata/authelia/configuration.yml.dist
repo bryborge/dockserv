@@ -10,7 +10,7 @@ theme: dark
 log:
   level: warn # debug, trace, info
 
-default_redirection_url: "https://authelia.<DOMAIN_NAME>.com"
+default_redirection_url: "https://authelia.<DOMAIN_NAME>"
 
 totp:
   issuer: authelia.com
@@ -30,18 +30,18 @@ authentication_backend:
 access_control:
   default_policy: deny
   rules:
-    - domain: authelia.<DOMAIN_NAME>.com
+    - domain: authelia.<DOMAIN_NAME>
       policy: bypass
     - domain:
-        - "*.<DOMAIN_NAME>.com"
-        - "<DOMAIN_NAME>.com"
+        - "*.<DOMAIN_NAME>"
+        - "<DOMAIN_NAME>"
       policy: two_factor
 
 session:
   name: authelia_session
   expiration: 3600 # 1 hour
   inactivity: 300 # 5 minutes
-  domain: <DOMAIN_NAME>.com
+  domain: <DOMAIN_NAME>
   redis:
     host: redis
     port: 6379
