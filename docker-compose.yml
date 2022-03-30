@@ -191,6 +191,9 @@ services:
 
   ##
   # Portainer
+  #   Web UI for docker container management.
+  #   For more info:
+  #     - https://www.portainer.io/
   portainer:
     command: -H tcp://socket_proxy:2375
     container_name: portainer
