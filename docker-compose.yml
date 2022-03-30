@@ -23,15 +23,16 @@ secrets:
     file: ${DOCKER_DIR}/secrets/authelia_storage_postgres_password
 
 services:
+  ##
   # Docker Socket Proxy
   #   A security-enhanced proxy for the Docker Socket.
   #   For more info: https://hub.docker.com/r/tecnativa/docker-socket-proxy
   socket_proxy:
     container_name: socket-proxy
-    # Variables match the URL prefix (i.e. AUTH blocks access to /auth/* parts of the API, etc).
-    #   0 - revoke access
-    #   1 - grant access
     environment:
+      # Variables match the URL prefix (i.e. AUTH blocks access to /auth/* parts of the API, etc).
+      #   0 - revoke access
+      #   1 - grant access
       - AUTH=0
       - BUILD=0
       - CONFIGS=0
@@ -39,9 +40,15 @@ services:
       - DISTRIBUTION=0
       - EVENTS=1
       - EXEC=0
+      - IMAGES=1
+      - INFO=1
+      - NETWORKS=1
       - LOG_LEVEL=info # (debug, info, notice, warning, err, crit, alert, emerg)
       - PING=1
+      - SERVICES=1
       - VERSION=1
+      - TASKS=1
+      - VOLUMES=1
     image: tecnativa/docker-socket-proxy:0.1.1
     networks:
       socket_proxy:
@@ -49,6 +56,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
+  ##
   # Authelia
   #   An open-source full-featured authentication server.
   #   For more info: https://hub.docker.com/r/authelia/authelia
@@ -86,14 +94,15 @@ services:
     volumes:
       - ${DOCKER_DIR}/appdata/authelia:/config
 
+  ##
   # Traefik
   #   An Open Source Edge Router that makes publishing your services a fun and easy experience.
   #   For more info:
   #     - https://doc.traefik.io/traefik/
   #     - https://hub.docker.com/_/traefik
   traefik:
-    # Traefik CLi Documentation: https://doc.traefik.io/traefik/reference/static-configuration/cli-ref/
     command:
+      # Traefik CLi Documentation: https://doc.traefik.io/traefik/reference/static-configuration/cli-ref/
       - --accessLog=true
       - --accessLog.filePath=/etc/traefik/log/traefik.log
       - --accessLog.bufferingSize=100
@@ -169,6 +178,28 @@ services:
       - ${DOCKER_DIR}/appdata/traefik/acme:/etc/traefik/acme
       - ${DOCKER_DIR}/appdata/traefik/log:/etc/traefik/log
 
+  ##
+  # Portainer
+  portainer:
+    command: -H tcp://socket_proxy:2375
+    container_name: portainer
+    environment:
+      - TZ=${TZ}
+    image: portainer/portainer-ce:2.11.1
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.portainer-rtr.entrypoints=https
+      - traefik.http.routers.portainer-rtr.rule=Host(`portainer.${DOMAIN_NAME}`)
+      - traefik.http.routers.portainer-rtr.middlewares=chain-authelia@file
+      - traefik.http.routers.portainer-rtr.service=portainer-svc
+      - traefik.http.services.portainer-svc.loadbalancer.server.port=9000
+    networks:
+      - reverse_proxy
+      - socket_proxy
+    volumes:
+      - ${DOCKER_DIR}/appdata/portainer/data:/data
+
+  ##
   # Plex
   #   A global streaming media service and client-server media platform.
   #   For more info:
@@ -245,6 +276,11 @@ services:
       - ${DOCKER_DIR}/appdata/plex/tmp:/transcode
       - /media/nas/media:/media
 
+  ##
+  # Postgres
+  #   Open-source database management software.
+  #   For more info:
+  #     - https://www.postgresql.org/
   postgres:
     container_name: postgres
     environment:
@@ -265,6 +301,12 @@ services:
     volumes:
       - ${DOCKER_DIR}/appdata/postgres/data:/config
 
+  ##
+  # Redis
+  #   Open-source, in-memory, data store.
+  #   For more info:
+  #     - https://redis.io
+  #
   redis:
     container_name: redis
     entrypoint: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD} --maxmemory 512mb --maxmemory-policy allkeys-lru
