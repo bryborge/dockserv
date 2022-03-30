@@ -18,6 +18,11 @@ secrets/authelia_*
 appdata/plex/config/Library
 
 # Portainer
+appdata/portainer/data/bin
+appdata/portainer/data/certs
+appdata/portainer/data/compose
+appdata/portainer/data/docker_config
+appdata/portainer/data/tls
 appdata/portainer/data/portainer.*
 
 # Redis
