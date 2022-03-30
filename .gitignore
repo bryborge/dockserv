@@ -17,6 +17,9 @@ secrets/authelia_*
 # Plex
 appdata/plex/config/Library
 
+# Portainer
+appdata/portainer/data/portainer.*
+
 # Redis
 appdata/redis/data/*.aof
 appdata/redis/data/*.rdb
