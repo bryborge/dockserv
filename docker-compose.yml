@@ -204,7 +204,7 @@ services:
       - traefik.enable=true
       - traefik.http.routers.glances-rtr.entrypoints=https
       - traefik.http.routers.glances-rtr.rule=Host(`glances.${DOMAIN_NAME}`)
-      - traefik.http.routers.glances-rtr.middlewares=chain-authelia@fila
+      - traefik.http.routers.glances-rtr.middlewares=chain-authelia@file
       - traefik.http.routers.glances-rtr.service=glances-svc
       - traefik.http.services.glances-svc.loadbalancer.server.port=61208
     networks:
@@ -212,6 +212,7 @@ services:
       - reverse_proxy
       - socket_proxy
     pid: host
+    restart: unless-stopped
 #    volumes:
 #      - ${DOCKER_DIR}/appdata/glances/glances.conf:/glances/conf/glances.conf
 
