@@ -43,16 +43,27 @@ services:
       - IMAGES=1
       - INFO=1
       - NETWORKS=1
+      - NODES=0
+      - PLUGINS=0
       - LOG_LEVEL=info # (debug, info, notice, warning, err, crit, alert, emerg)
       - PING=1
       - SERVICES=1
-      - VERSION=1
+      - SESSION=0
+      - SWARM=0
+      - SYSTEM=0
       - TASKS=1
+      - VERSION=1
       - VOLUMES=1
     image: tecnativa/docker-socket-proxy:0.1.1
     networks:
       socket_proxy:
+    ports:
+      - target: 2375
+        published: 2375
+        protocol: tcp
+        mode: host
     privileged: true
+    restart: unless-stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
@@ -196,6 +207,7 @@ services:
     networks:
       - reverse_proxy
       - socket_proxy
+    restart: unless-stopped
     volumes:
       - ${DOCKER_DIR}/appdata/portainer/data:/data
 
