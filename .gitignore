@@ -10,6 +10,7 @@ acme.json
 
 # Authelia
 appdata/authelia/configuration.yml
+appdata/authelia/notifications.txt
 appdata/authelia/users.yml
 secrets/authelia_*
 
@@ -18,6 +19,7 @@ appdata/plex/config/Library
 
 # Redis
 appdata/redis/data/*.aof
+appdata/redis/data/*.rdb
 
 # Traefik
 appdata/traefik/log/*.log
