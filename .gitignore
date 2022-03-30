@@ -10,7 +10,7 @@ acme.json
 
 # Authelia
 appdata/authelia/configuration.yml
-appdata/authelia/notifications.txt
+appdata/authelia/notification.txt
 appdata/authelia/users.yml
 secrets/authelia_*
 

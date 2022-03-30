@@ -198,7 +198,7 @@ services:
     container_name: glances
     environment:
       GLANCES_OPT: '-w'
-      DOCKER_HOST: tcp://socket-proxy:2375
+      DOCKER_HOST: tcp://socket_proxy:2375
     image: nicolargo/glances:latest
     labels:
       - traefik.enable=true
