@@ -190,6 +190,32 @@ services:
       - ${DOCKER_DIR}/appdata/traefik/log:/etc/traefik/log
 
   ##
+  # Glances
+  #   Web UI for system information monitoring.
+  #   For more info:
+  #     - https://nicolargo.github.io/glances/
+  glances:
+    container_name: glances
+    environment:
+      GLANCES_OPT: '-w'
+      DOCKER_HOST: tcp://socket-proxy:2375
+    image: nocolargo/glances:latest
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.glances-rtr.entrypoints=https
+      - traefik.http.routers.glances-rtr.rule=Host(`glances.${DOMAIN_NAME}`)
+      - traefik.http.routers.glances-rtr.middlewares=chain-authelia@fila
+      - traefik.http.routers.glances-rtr.service=glances-svc
+      - traefik.http.services.glances-svc.loadbalancer.server.port=61208
+    networks:
+      - default
+      - reverse_proxy
+      - socket_proxy
+    pid: host
+#    volumes:
+#      - ${DOCKER_DIR}/appdata/glances/glances.conf:/glances/conf/glances.conf
+
+  ##
   # Portainer
   #   Web UI for docker container management.
   #   For more info:
