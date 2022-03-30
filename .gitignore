@@ -17,9 +17,18 @@ secrets/authelia_*
 # Plex
 appdata/plex/config/Library
 
+# Portainer
+appdata/portainer/data/bin
+appdata/portainer/data/certs
+appdata/portainer/data/compose
+appdata/portainer/data/docker_config
+appdata/portainer/data/tls
+appdata/portainer/data/portainer.*
+
 # Redis
 appdata/redis/data/*.aof
 appdata/redis/data/*.rdb
 
 # Traefik
 appdata/traefik/log/*.log
+appdata/traefik/rules/web-middlewares.yml
