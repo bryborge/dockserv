@@ -136,7 +136,7 @@ services:
       - --log=true
       - --log.level=WARN # (Default: ERROR) DEBUG, INFO, WARN, ERROR, FATAL, PANIC
       - --providers.docker=true
-      - --providers.docker.endpoint=tcp://socket-proxy:2375
+      - --providers.docker.endpoint=tcp://socket_proxy:2375
       - --providers.docker.exposedByDefault=false
       - --providers.docker.network=reverse_proxy
       - --providers.file.directory=/etc/traefik/rules
@@ -353,7 +353,7 @@ services:
     container_name: redis
     entrypoint: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD} --maxmemory 512mb --maxmemory-policy allkeys-lru
     environment:
-      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_PASSWORD=/run/secrets/authelia_session_redis_password
     image: redis:6.2.6
     networks:
       reverse_proxy:
