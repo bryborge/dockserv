@@ -30,7 +30,7 @@ generate_middlewares_rules() {
   echo "Altering Authelia middlewares rules file ..."
   printf "\n"
 
-  echo "Please enter your domain name (again). (ex: domain.com)"
+  echo "Please enter your domain name. (ex: domain.com)"
   search_replace_prompt "Domain Name: " "<DOMAIN_NAME>" web-middlewares.yml
 
   echo "Authelia middlewares rules updated!"
@@ -46,7 +46,7 @@ generate_config_file() {
   cp configuration.yml{.dist,}
   printf "\n"
 
-  echo "Please enter your domain name. (ex: domain.com)"
+  echo "Please enter your domain name, again. (ex: domain.com)"
   search_replace_prompt "Domain Name: " "<DOMAIN_NAME>" configuration.yml
 
   echo "Authelia configuration.yml file created!"
