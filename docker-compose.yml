@@ -348,12 +348,9 @@ services:
   #   Open-source, in-memory, data store.
   #   For more info:
   #     - https://redis.io
-  #
   redis:
     container_name: redis
-    entrypoint: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD} --maxmemory 512mb --maxmemory-policy allkeys-lru
-    environment:
-      - REDIS_PASSWORD=/run/secrets/authelia_session_redis_password
+    entrypoint: redis-server /usr/local/etc/redis/redis.conf
     image: redis:6.2.6
     networks:
       reverse_proxy:
@@ -362,9 +359,8 @@ services:
         published: 6379
         protocol: tcp
     restart: unless-stopped
-    secrets:
-      - authelia_session_redis_password
     volumes:
       - ${DOCKER_DIR}/appdata/redis/data:/data
+      - ${DOCKER_DIR}/appdata/redis/redis.conf:/usr/local/etc/redis/redis.conf
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
