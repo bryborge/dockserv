@@ -54,12 +54,6 @@ deploying to.
     ```shell
     bash scripts/setup-authelia.sh
     ```
-   
-    You will be asked for an argon2id hash. To generate one, run the following.
-
-    ```shell
-    docker run authelia/authelia:latest authelia hash-password '<password>'
-    ```
 
 5.  Run the Redis setup script and follow the on-screen instructions.
 
@@ -67,7 +61,13 @@ deploying to.
     bash scripts/setup-redis.sh
     ```
 
-6.  Spin up some or all of your server applications with docker-compose.
+6.  Run the Postgres setup script and follow the on-screen instructions.
+
+    ```shell
+    bash scripts/setup-postgres.shs
+    ```
+
+7.  Spin up some or all of your server applications with docker-compose.
 
     ```shell
     # Example: specific individual applications
@@ -77,20 +77,8 @@ deploying to.
 
     ```shell
     # Example: all applications
-    docker compose up -d
+    docker-compose up -d
     ```
-
-7.  Create the authelia user's database password.
-
-    ```shell
-    docker compose exec postgres psql -U authelia
-    ```
-    ```sql
-    ALTER ROLE authelia WITH PASSWORD '<password>';
-    \q
-    ```
-
-    You may need to recreate the authelia container.
 
 8.  If you're logging into Authelia for the first time, you'll need to setup totp.
     After you've added your credentials, click on "Not registered yet?" and follow the instructions to register another
