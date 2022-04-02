@@ -13,6 +13,7 @@ main() {
   generate_config "$domain"
   generate_secrets
   generate_postgres_password
+  generate_storage_encryption_key
   generate_redis_password
 
   echo "Done."
@@ -58,7 +59,6 @@ generate_secrets() {
   local secret_files=(
     'authelia_jwt_secret'
     'authelia_session_secret'
-    'authelia_storage_encryption_key'
   )
 
   for f in "${secret_files[@]}"; do
@@ -91,8 +91,20 @@ generate_postgres_password() {
   printf "\n"
 }
 
+generate_storage_encryption_key() {
+    echo "Generating 'authelia_storage_encryption_key' file ..."
+    echo "Please enter a secret for 'authelia_storage_encryption_key': (MUST BE 20 CHARACTERS OR LONGER) "
+    read -rs enc_key
+    printf "\n"
+
+    echo "$enc_key" > ./secrets/authelia_storage_encryption_key
+
+    echo "'authelia_storage_encryption_key' file has been generated!"
+    printf "\n"
+}
+
 generate_redis_password() {
-  echo "Generating Redis Secret file ..."
+  echo "Generating 'authelia_session_redis_password' secret ..."
   echo "Please enter a secret for 'authelia_session_redis_password': "
   read -rs redis_secret
   printf "\n"
