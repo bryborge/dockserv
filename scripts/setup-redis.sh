@@ -9,8 +9,8 @@ main() {
   echo "Please enter a password for Redis."
   read -rs "  Password: " password
 
-  generate_config $password
-  generate_secret $password
+  generate_config "$password"
+  generate_secret "$password"
 
   echo "Done."
 }
@@ -35,7 +35,7 @@ generate_secret() {
   pushd ./secrets > /dev/null 2>&1
 
   echo "Generating Redis Secret file ..."
-  echo $1 > authelia_session_redis_password
+  echo "$1" > authelia_session_redis_password
 
   popd > /dev/null 2>&1
 }
