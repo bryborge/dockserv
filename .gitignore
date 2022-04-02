@@ -12,7 +12,6 @@ acme.json
 appdata/authelia/configuration.yml
 appdata/authelia/notification.txt
 appdata/authelia/users.yml
-secrets/authelia_*
 
 # Plex
 appdata/plex/config/Library
@@ -26,12 +25,16 @@ appdata/portainer/data/tls
 appdata/portainer/data/portainer.*
 
 # Postgres
-appdata/postgres/initdb.d/authelia-user-db.sh.dist
+appdata/postgres/initdb.d/authelia-user-db.sh
 
 # Redis
 appdata/redis/redis.conf
 appdata/redis/data/*.aof
 appdata/redis/data/*.rdb
+
+# Secrets
+secrets/authelia_*
+secrets/postgres_*
 
 # Traefik
 appdata/traefik/log/*.log
