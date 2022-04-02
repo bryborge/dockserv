@@ -92,13 +92,13 @@ generate_postgres_password() {
 
 generate_redis_password() {
   echo "Generating Redis Secret file ..."
-  echo "Please enter a secret for 'authelia_storage_postgres_password': "
+  echo "Please enter a secret for 'authelia_session_redis_password': "
   read -rs redis_secret
   printf "\n"
 
-  echo "$redis_secret" > authelia_session_redis_password
+  echo "$redis_secret" > ./secrets/authelia_session_redis_password
 
-  echo "'authelia_storage_postgres_password' file has been generated!"
+  echo "'authelia_session_redis_password' file has been generated!"
   printf "\n"
 }
 
