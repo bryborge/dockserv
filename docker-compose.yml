@@ -144,11 +144,6 @@ services:
       - --providers.file.directory=/etc/traefik/rules
       - --providers.file.watch=true # watch top-level rules/ dir for file changes
     container_name: traefik
-    environment:
-      - ADGUARD_IP=${ADGUARD_IP}
-      - ADGUARD_PORT=${ADGUARD_PORT}
-      - CF_API_KEY=${CLOUDFLARE_API_KEY}
-      - DOMAIN_NAME=${DOMAIN_NAME}
     image: traefik:v2.6.0
     labels:
       - traefik.enable=true
@@ -226,8 +221,6 @@ services:
   portainer:
     command: -H tcp://socket_proxy:2375
     container_name: portainer
-    environment:
-      - TZ=${TZ}
     image: portainer/portainer-ce:2.11.1
     labels:
       - traefik.enable=true
@@ -251,12 +244,7 @@ services:
   plex:
     container_name: plex
     environment:
-      - TZ=${TZ}
       - HOSTNAME="Plex"
-      - PLEX_CLAIM=${PLEX_CLAIM}
-      - PLEX_UID=${PUID}
-      - PLEX_GID=${PGID}
-      - ADVERTISE_IP=${ADVERTISE_IP}
     image: plexinc/pms-docker:1.25.4.5487-648a8f9f9
     labels:
       - traefik.enable=true
@@ -329,7 +317,6 @@ services:
     container_name: postgres
     environment:
       - POSTGRES_PASSWORD=/run/secrets/postgres_default_password
-      - TZ=${TZ}
     image: postgres:12.10
     networks:
       reverse_proxy:
