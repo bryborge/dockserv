@@ -1,4 +1,7 @@
-version: "3.9"
+##
+# BASE CONFIGURATION
+#
+version: '3.9'
 
 networks:
   default:

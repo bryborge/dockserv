@@ -1,4 +1,7 @@
-version: "3.9"
+##
+# ADDITIONAL CONFIGURATION
+#
+version: 3.9
 
 services:
   ##
