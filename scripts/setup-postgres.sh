@@ -14,6 +14,8 @@ main() {
 
   echo "'postgres_default_password' file has been generated!"
   printf "\n"
+
+  echo "Done."
 }
 
 main # Make it so.
