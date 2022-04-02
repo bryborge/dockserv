@@ -65,12 +65,12 @@ generate_secrets() {
     echo "Generating '$f' secret ..."
     touch ./secrets/"$f"
 
-    echo "Please enter a secret for \"$f\": "
-    read -rs "  Secret: " secret
+    echo "Please enter a secret for '$f': "
+    read -rs secret
     printf "\n"
 
     echo "$secret" > ./secrets/"$f"
-    echo "\"$f\" file has been generated!"
+    echo "'$f' file has been generated!"
     printf "\n"
   done
 }
@@ -80,7 +80,7 @@ generate_postgres_password() {
   touch ./secrets/authelia_storage_postgres_password
 
   echo "Please enter a secret for 'authelia_storage_postgres_password': "
-  read -rs "  Secret: " psql_secret
+  read -rs psql_secret
   printf "\n"
 
   echo "$psql_secret" > ./secrets/authelia_storage_postgres_password
@@ -93,7 +93,7 @@ generate_postgres_password() {
 generate_redis_password() {
   echo "Generating Redis Secret file ..."
   echo "Please enter a secret for 'authelia_storage_postgres_password': "
-  read -rs "  Secret: " redis_secret
+  read -rs redis_secret
   printf "\n"
 
   echo "$redis_secret" > authelia_session_redis_password

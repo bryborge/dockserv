@@ -7,7 +7,7 @@ set -euo pipefail
 #
 main() {
   echo "Please enter a password for Redis."
-  read -rs "  Password: " password
+  read -rs password
 
   generate_config "$password"
 
