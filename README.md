@@ -77,15 +77,15 @@ deploying to.
 
     ```shell
     # Example: all applications
-    docker-compose up -d
+    docker compose up -d
     ```
 
 7.  Create the authelia user's database password.
 
     ```shell
-    docker-compose exec postgres psql -U authelia
+    docker compose exec postgres psql -U authelia
     ```
-    ```shell
+    ```sql
     ALTER ROLE authelia WITH PASSWORD '<password>';
     \q
     ```

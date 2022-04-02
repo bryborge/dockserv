@@ -10,8 +10,10 @@ main() {
   read -rp "  Domain: " domain
 
   generate_traefik_middlewares "$domain"
-  generate_authelia_config "$domain"
+  generate_config "$domain"
   generate_secrets
+  generate_postgres_password
+  generate_redis_password
 
   echo "Done."
 }
@@ -26,7 +28,7 @@ generate_traefik_middlewares() {
   popd > /dev/null 2>&1
 }
 
-generate_authelia_config() {
+generate_config() {
   pushd ./appdata/authelia > /dev/null 2>&1
 
   echo "Generating Authelia configuration file ..."
@@ -57,7 +59,6 @@ generate_secrets() {
     'authelia_jwt_secret'
     'authelia_session_secret'
     'authelia_storage_encryption_key'
-    'authelia_storage_postgres_password'
   )
 
   for f in "${secret_files[@]}"; do
@@ -72,6 +73,33 @@ generate_secrets() {
     echo "\"$f\" file has been generated!"
     printf "\n"
   done
+}
+
+generate_postgres_password() {
+  echo "Generating 'authelia_storage_postgres_password' secret ..."
+  touch ./secrets/authelia_storage_postgres_password
+
+  echo "Please enter a secret for 'authelia_storage_postgres_password': "
+  read -rs "  Secret: " psql_secret
+  printf "\n"
+
+  echo "$psql_secret" > ./secrets/authelia_storage_postgres_password
+  sed -i "s/<AUTHELIA_PASSWORD>/$secret/" ./appdata/postgres/initdb.d/authelia-user-db.sh
+
+  echo "'authelia_storage_postgres_password' file has been generated!"
+  printf "\n"
+}
+
+generate_redis_password() {
+  echo "Generating Redis Secret file ..."
+  echo "Please enter a secret for 'authelia_storage_postgres_password': "
+  read -rs "  Secret: " redis_secret
+  printf "\n"
+
+  echo "$redis_secret" > authelia_session_redis_password
+
+  echo "'authelia_storage_postgres_password' file has been generated!"
+  printf "\n"
 }
 
 main # Make it so.

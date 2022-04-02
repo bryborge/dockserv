@@ -326,8 +326,7 @@ services:
   postgres:
     container_name: postgres
     environment:
-      - POSTGRES_USER=authelia
-      - POSTGRES_PASSWORD=/run/secrets/authelia_storage_postgres_password
+      - POSTGRES_PASSWORD=/run/secrets/postgres_default_password
       - TZ=${TZ}
     image: postgres:12.10
     networks:
@@ -339,9 +338,10 @@ services:
         mode: host
     restart: unless-stopped
     secrets:
-      - authelia_storage_postgres_password
+      - postgres_default_password
     volumes:
-      - ${DOCKER_DIR}/appdata/postgres/data:/config
+      - ${DOCKER_DIR}/appdata/postgres/data:/var/lib/postgresql/data
+      - ${DOCKER_DIR}/appdata/postgres/initdb.d:/docker-entrypoint-initdb.d
 
   ##
   # Redis
