@@ -49,10 +49,10 @@ deploying to.
     docker network create socket_proxy
     ```
 
-4.  Run the Authelia configuration setup script and follow the on-screen instructions.
+4.  Run the Authelia setup script and follow the on-screen instructions.
 
     ```shell
-    bash scripts/authelia-set-config.sh
+    bash scripts/setup-authelia.sh
     ```
    
     You will be asked for an argon2id hash. To generate one, run the following.
@@ -61,10 +61,10 @@ deploying to.
     docker run authelia/authelia:latest authelia hash-password '<password>'
     ```
 
-5.  Run the Secrets generation script and follow the on-screen instructions.
+5.  Run the Redis setup script and follow the on-screen instructions.
 
     ```shell
-    bash scripts/gen-secrets.sh
+    bash scripts/setup-redis.sh
     ```
 
 6.  Spin up some or all of your server applications with docker-compose.
