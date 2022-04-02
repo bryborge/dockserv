@@ -84,6 +84,7 @@ generate_postgres_password() {
   printf "\n"
 
   echo "$psql_secret" > ./secrets/authelia_storage_postgres_password
+  cp ./appdata/postgres/initdb.d/authelia-user-db.sh{.dist,}
   sed -i "s/<AUTHELIA_PASSWORD>/$secret/" ./appdata/postgres/initdb.d/authelia-user-db.sh
 
   echo "'authelia_storage_postgres_password' file has been generated!"

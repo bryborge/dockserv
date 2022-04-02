@@ -25,7 +25,11 @@ appdata/portainer/data/docker_config
 appdata/portainer/data/tls
 appdata/portainer/data/portainer.*
 
+# Postgres
+appdata/postgres/initdb.d/authelia-user-db.sh.dist
+
 # Redis
+appdata/redis/redis.conf
 appdata/redis/data/*.aof
 appdata/redis/data/*.rdb
 
