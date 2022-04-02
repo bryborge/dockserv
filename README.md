@@ -64,7 +64,7 @@ deploying to.
 6.  Run the Postgres setup script and follow the on-screen instructions.
 
     ```shell
-    bash scripts/setup-postgres.shs
+    bash scripts/setup-postgres.sh
     ```
 
 7.  Spin up some or all of your server applications with docker-compose.
