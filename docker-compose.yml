@@ -43,8 +43,6 @@ services:
       - AUTHELIA_SESSION_SECRET_FILE=/run/secrets/authelia_session_secret
       - AUTHELIA_STORAGE_ENCRYPTION_KEY_FILE=/run/secrets/authelia_storage_encryption_key
       - AUTHELIA_STORAGE_POSTGRES_PASSWORD_FILE=/run/secrets/authelia_storage_postgres_password
-      - DOMAIN_NAME=${DOMAIN_NAME}
-      - TZ=${TZ}
     image: authelia/authelia:4.34.4
     labels:
       - traefik.enable=true
