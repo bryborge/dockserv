@@ -85,11 +85,12 @@ services:
       - EXEC=0
       - IMAGES=1
       - INFO=1
+      - LOG_LEVEL=info # (debug, info, notice, warning, err, crit, alert, emerg)
       - NETWORKS=1
       - NODES=0
-      - PLUGINS=0
-      - LOG_LEVEL=info # (debug, info, notice, warning, err, crit, alert, emerg)
       - PING=1
+      - PLUGINS=0
+      - POST=1
       - SERVICES=1
       - SESSION=0
       - SWARM=0
