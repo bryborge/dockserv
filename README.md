@@ -24,10 +24,15 @@
     <li>
       <a href="#getting-started">Getting Started</a>
       <ul>
-        <li>
-          <a href="#prerequisites">Prerequisites</a>
-        </li>
+        <li><a href="#prerequisites">Prerequisites</a></li>
         <li><a href="#installation">Installation</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#adding-content-to-plex-from-a-network-share">Adding Content to Plex from a Network Share</a>
+      <ul>
+        <li><a href="#on-the-nas">On the NAS</a></li>
+        <li><a href="#on-the-dockserv-host">On the DockServ Host</a></li>
       </ul>
     </li>
     <li>
@@ -115,6 +120,47 @@ deploying to.
     After you've added your credentials, click on "Not registered yet?" and follow the instructions to register another
     device for authorization.
     The email it sends can be found in `appdata/authelia/notification.txt`.
+
+### Adding Content to Plex from a Network Share
+
+Assuming you are using Network Attached Storage (NAS) to house the content you want Plex to serve,
+you will need to make some additional changes to the host in order to share that content with the Plex shared volume.
+
+#### On the NAS
+
+Enable [Network File System (NFS)](https://help.ubuntu.com/lts/serverguide/network-file-system.html).
+
+#### On the DockServ Host
+
+1.  Ensure that the `nfs-common` library is installed.
+
+    ```shell
+    sudo apt update && sudo apt install nfs-common
+    ```
+
+2.  Edit `/etc/fstab` and tell it where it can find the network shared folders.
+    Add the following line, substituting the NAS local IP and the name of the shared files:
+
+    ```shell
+    ...
+    192.168.1.<XXX>:</path/to/share_name> /media/nas/<share_name> nfs auto,defaults,nofail 0 0
+    ```
+
+    Add as many shares as you want Plex to have access to, save, and exit.
+
+3.  Make the `<share_name>` folder.
+
+    ```shell
+    sudo mkdir -p /media/nas/<share_name>
+    ```
+
+4.  Finally, mount the drives.
+
+    ```sh
+    sudo mount -a
+    ```
+
+The media should now be shared with the docker volume and available on the host at `/media/nas`.
 
 ## License
 
