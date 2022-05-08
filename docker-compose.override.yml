@@ -37,7 +37,11 @@ services:
   plex:
     container_name: plex
     environment:
+      - ADVERTISE_IP=${ADVERTISE_IP}
       - HOSTNAME="Plex"
+      - PLEX_CLAIM=${PLEX_CLAIM}
+      - PGID=${PLEX_GID}
+      - PUID=${PLEX_UID}
     image: plexinc/pms-docker:1.25.4.5487-648a8f9f9
     labels:
       - traefik.enable=true
