@@ -146,6 +146,12 @@ services:
       - --providers.file.directory=/etc/traefik/rules
       - --providers.file.watch=true # watch top-level rules/ dir for file changes
     container_name: traefik
+    environment:
+      - ADGUARD_IP=${ADGUARD_IP}
+      - ADGUARD_PORT=${ADGUARD_PORT}
+      - CF_API_KEY=${CLOUDFLARE_API_KEY}
+      - CLOUDFLARE_EMAIL=${CLOUDFLARE_EMAIL}
+      - DOMAIN_NAME=${DOMAIN_NAME}
     image: traefik:v2.6.0
     labels:
       - traefik.enable=true
