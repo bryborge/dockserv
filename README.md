@@ -35,7 +35,6 @@
     </li>
   </ol>
 </details>
-<br />
 
 ## About the Project
 
