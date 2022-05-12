@@ -13,6 +13,9 @@ appdata/authelia/configuration.yml
 appdata/authelia/notification.txt
 appdata/authelia/users.yml
 
+# Heimdall
+appdata/heimdall/*
+
 # Plex
 appdata/plex/config/Library
 
