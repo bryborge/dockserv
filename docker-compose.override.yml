@@ -38,7 +38,9 @@ services:
     image: lscr.io/linuxserver/heimdall
     container_name: heimdall
     environment:
-      - name=value
+      - PUID=${PLEX_UID}
+      - PGID=${PLEX_GID}
+      - TZ=${TZ}
     labels:
       - traefik.enable=true
       - traefik.http.routers.heimdall-rtr.entrypoints=https
@@ -46,6 +48,8 @@ services:
       - traefik.http.routers.heimdall-rtr.middlewares=chain-authelia@file
       - traefik.http.routers.heimdall-rtr.service=heimdall-svc
       - traefik.http.services.heimdall-svc.loadbalancer.server.port=80
+    networks:
+      - reverse_proxy
     volumes:
       - $DOCKER_DIR/appdata/heimdall:/config
 
