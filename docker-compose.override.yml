@@ -83,7 +83,6 @@ services:
       - traefik.http.services.plex-svc.loadbalancer.server.port=32400
     networks:
       reverse_proxy:
-      socket_proxy:
     restart: unless-stopped
     ports:
       # TCP
