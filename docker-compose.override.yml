@@ -42,9 +42,9 @@ services:
     image: lscr.io/linuxserver/heimdall
     container_name: heimdall
     environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
+      PUID: ${PUID}
+      PGID: ${PGID}
+      TZ: ${TZ}
     labels:
       - traefik.enable=true
       - traefik.http.routers.heimdall-rtr.entrypoints=https
