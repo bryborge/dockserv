@@ -3,6 +3,10 @@
 #
 version: '3.9'
 
+secrets:
+  plex_claim:
+    file: ${DOCKER_DIR}/secrets/plex_claim_token
+
 services:
   ##
   # Glances
@@ -61,11 +65,11 @@ services:
   plex:
     container_name: plex
     environment:
-      - ADVERTISE_IP=${ADVERTISE_IP}
-      - HOSTNAME="Plex"
-      - PLEX_CLAIM=${PLEX_CLAIM}
-      - PGID=${PLEX_GID}
-      - PUID=${PLEX_UID}
+      ADVERTISE_IP: ${HOST_IP}:32400
+      HOSTNAME: "Plex"
+      PLEX_CLAIM: /run/secrets/plex_claim
+      PGID: ${PLEX_GID}
+      PUID: ${PLEX_UID}
     image: plexinc/pms-docker:1.25.4.5487-648a8f9f9
     labels:
       - traefik.enable=true
@@ -83,7 +87,6 @@ services:
       - traefik.http.services.plex-svc.loadbalancer.server.port=32400
     networks:
       reverse_proxy:
-    restart: unless-stopped
     ports:
       # TCP
       - target: 32400
@@ -123,6 +126,9 @@ services:
         published: 32414
         protocol: udp
         mode: host
+    restart: unless-stopped
+    secrets:
+      - plex_claim
     volumes:
       - ${DOCKER_DIR}/appdata/plex/config:/config
       - ${DOCKER_DIR}/appdata/plex/tmp:/transcode
