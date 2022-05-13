@@ -42,8 +42,8 @@ services:
     image: lscr.io/linuxserver/heimdall
     container_name: heimdall
     environment:
-      - PUID=${PLEX_UID}
-      - PGID=${PLEX_GID}
+      - PUID=${PUID}
+      - PGID=${PGID}
       - TZ=${TZ}
     labels:
       - traefik.enable=true
@@ -68,8 +68,8 @@ services:
       ADVERTISE_IP: ${HOST_IP}:32400
       HOSTNAME: "Plex"
       PLEX_CLAIM: /run/secrets/plex_claim
-      PGID: ${PLEX_GID}
-      PUID: ${PLEX_UID}
+      PGID: ${PGID}
+      PUID: ${PUID}
     image: plexinc/pms-docker:1.25.4.5487-648a8f9f9
     labels:
       - traefik.enable=true
