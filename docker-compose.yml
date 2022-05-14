@@ -1,8 +1,11 @@
 ##
-# BASE CONFIGURATION
+# CORE APPS
 #
 version: '3.9'
 
+##
+# NETWORKS
+#
 networks:
   default:
     driver: bridge
@@ -13,6 +16,9 @@ networks:
     driver: bridge
     name: socket_proxy
 
+##
+# SECRETS
+#
 secrets:
   authelia_jwt_secret:
     file: ${DOCKER_DIR}/secrets/authelia_jwt_secret
@@ -24,9 +30,22 @@ secrets:
     file: ${DOCKER_DIR}/secrets/authelia_storage_encryption_key
   authelia_storage_postgres_password:
     file: ${DOCKER_DIR}/secrets/authelia_storage_postgres_password
+  cloudflare_api_key:
+    file: ${DOCKER_DIR}/secrets/cloudflare_api_key
   postgres_default_password:
     file: ${DOCKER_DIR}/secrets/postgres_default_password
 
+##
+# EXTENSION FIELDS
+#
+x-environment: &pgid-puid-tz
+  PGID: ${PGID}
+  PUID: ${PUID}
+  TZ: ${TZ}
+
+##
+# SERVICES
+#
 services:
   ##
   # Authelia
@@ -38,11 +57,12 @@ services:
       - postgres
       - redis
     environment:
-      - AUTHELIA_JWT_SECRET_FILE=/run/secrets/authelia_jwt_secret
-      - AUTHELIA_SESSION_REDIS_PASSWORD_FILE=/run/secrets/authelia_session_redis_password
-      - AUTHELIA_SESSION_SECRET_FILE=/run/secrets/authelia_session_secret
-      - AUTHELIA_STORAGE_ENCRYPTION_KEY_FILE=/run/secrets/authelia_storage_encryption_key
-      - AUTHELIA_STORAGE_POSTGRES_PASSWORD_FILE=/run/secrets/authelia_storage_postgres_password
+      <<: *pgid-puid-tz
+      AUTHELIA_JWT_SECRET_FILE: /run/secrets/authelia_jwt_secret
+      AUTHELIA_SESSION_REDIS_PASSWORD_FILE: /run/secrets/authelia_session_redis_password
+      AUTHELIA_SESSION_SECRET_FILE: /run/secrets/authelia_session_secret
+      AUTHELIA_STORAGE_ENCRYPTION_KEY_FILE: /run/secrets/authelia_storage_encryption_key
+      AUTHELIA_STORAGE_POSTGRES_PASSWORD_FILE: /run/secrets/authelia_storage_postgres_password
     image: authelia/authelia:4.34.4
     labels:
       - traefik.enable=true
@@ -61,6 +81,8 @@ services:
       - authelia_session_secret
       - authelia_storage_encryption_key
       - authelia_storage_postgres_password
+    security_opt:
+      - no-new-privileges:true
     volumes:
       - ${DOCKER_DIR}/appdata/authelia:/config
 
@@ -74,28 +96,28 @@ services:
       # Variables match the URL prefix (i.e. AUTH blocks access to /auth/* parts of the API, etc).
       #   0 - revoke access
       #   1 - grant access
-      - AUTH=0
-      - BUILD=0
-      - CONFIGS=0
-      - CONTAINERS=1
-      - DISTRIBUTION=0
-      - EVENTS=1
-      - EXEC=0
-      - IMAGES=1
-      - INFO=1
-      - LOG_LEVEL=info # (debug, info, notice, warning, err, crit, alert, emerg)
-      - NETWORKS=1
-      - NODES=0
-      - PING=1
-      - PLUGINS=0
-      - POST=1
-      - SERVICES=1
-      - SESSION=0
-      - SWARM=0
-      - SYSTEM=0
-      - TASKS=1
-      - VERSION=1
-      - VOLUMES=1
+      AUTH: 0
+      BUILD: 0
+      CONFIGS: 0
+      CONTAINERS: 1
+      DISTRIBUTION: 0
+      EVENTS: 1
+      EXEC: 0
+      IMAGES: 1
+      INFO: 1
+      LOG_LEVEL: info # (debug, info, notice, warning, err, crit, alert, emerg)
+      NETWORKS: 1
+      NODES: 0
+      PING: 1
+      PLUGINS: 0
+      POST: 1
+      SERVICES: 1
+      SESSION: 0
+      SWARM: 0
+      SYSTEM: 0
+      TASKS: 1
+      VERSION: 1
+      VOLUMES: 1
     image: tecnativa/docker-socket-proxy:0.1.1
     networks:
       socket_proxy:
@@ -147,11 +169,12 @@ services:
       - --providers.file.watch=true # watch top-level rules/ dir for file changes
     container_name: traefik
     environment:
-      - ADGUARD_IP=${ADGUARD_IP}
-      - ADGUARD_PORT=${ADGUARD_PORT}
-      - CF_API_KEY=${CLOUDFLARE_API_KEY}
-      - CLOUDFLARE_EMAIL=${CLOUDFLARE_EMAIL}
-      - DOMAIN_NAME=${DOMAIN_NAME}
+      <<: *pgid-puid-tz
+      ADGUARD_IP: ${ADGUARD_IP}
+      ADGUARD_PORT: ${ADGUARD_PORT}
+      CF_API_KEY: /run/secrets/cloudflare_api_key
+      CLOUDFLARE_EMAIL: ${CLOUDFLARE_EMAIL}
+      DOMAIN_NAME: ${DOMAIN_NAME}
     image: traefik:v2.6.0
     labels:
       - traefik.enable=true
@@ -189,6 +212,10 @@ services:
         protocol: tcp
         mode: host
     restart: unless-stopped
+    secrets:
+      - cloudflare_api_key
+    security_opt:
+      - no-new-privileges:true
     volumes:
       - ${DOCKER_DIR}/appdata/traefik/rules:/etc/traefik/rules
       - ${DOCKER_DIR}/appdata/traefik/acme:/etc/traefik/acme
@@ -202,7 +229,8 @@ services:
   postgres:
     container_name: postgres
     environment:
-      - POSTGRES_PASSWORD=/run/secrets/postgres_default_password
+      <<: *pgid-puid-tz
+      POSTGRES_PASSWORD: /run/secrets/postgres_default_password
     image: postgres:12.10
     networks:
       reverse_proxy:
@@ -214,6 +242,8 @@ services:
     restart: unless-stopped
     secrets:
       - postgres_default_password
+    security_opt:
+      - no-new-privileges:true
     volumes:
       - ${DOCKER_DIR}/appdata/postgres/data:/var/lib/postgresql/data
       - ${DOCKER_DIR}/appdata/postgres/initdb.d:/docker-entrypoint-initdb.d
@@ -234,6 +264,8 @@ services:
         published: 6379
         protocol: tcp
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
     volumes:
       - ${DOCKER_DIR}/appdata/redis/data:/data
       - ${DOCKER_DIR}/appdata/redis/redis.conf:/usr/local/etc/redis/redis.conf

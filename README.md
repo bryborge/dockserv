@@ -85,25 +85,16 @@ deploying to.
     cp .env{.dist,}
     ```
 
-3.  Run the Authelia setup script and follow the on-screen instructions.
+3.  Run the setup scripts and follow the on-screen instructions.
 
     ```shell
+    bash scripts/setup-cloudflare.sh
     bash scripts/setup-authelia.sh
-    ```
-
-4.  Run the Redis setup script and follow the on-screen instructions.
-
-    ```shell
     bash scripts/setup-redis.sh
-    ```
-
-5.  Run the Postgres setup script and follow the on-screen instructions.
-
-    ```shell
     bash scripts/setup-postgres.sh
     ```
 
-6.  Spin up some or all of your server applications with `docker compose`.
+4.  Spin up some or all of your server applications with `docker compose`.
 
     ```shell
     # Example: specific individual applications
@@ -116,7 +107,7 @@ deploying to.
     docker compose up -d
     ```
 
-7.  If you're logging into Authelia for the first time, you'll need to setup totp.
+5.  If you're logging into Authelia for the first time, you'll need to setup totp.
     After you've added your credentials, click on "Not registered yet?" and follow the instructions to register another
     device for authorization.
     The email it sends can be found in `appdata/authelia/notification.txt`.
@@ -156,7 +147,7 @@ Enable [Network File System (NFS)](https://help.ubuntu.com/lts/serverguide/netwo
 
 4.  Finally, mount the drives.
 
-    ```sh
+    ```shell
     sudo mount -a
     ```
 

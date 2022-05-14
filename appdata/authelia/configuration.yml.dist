@@ -39,8 +39,9 @@ access_control:
 
 session:
   name: authelia_session
-  expiration: 3600 # 1 hour
-  inactivity: 300 # 5 minutes
+  expiration: 3600         # 1 hour
+  inactivity: 300          # 5 minutes
+  remember_me_duration: 7d # 7 days
   domain: <DOMAIN_NAME>
   redis:
     host: redis
@@ -49,7 +50,7 @@ session:
 regulation:
   max_retries: 3
   find_time: 120 # 2 minutes
-  ban_time: 300 # 5 minutes
+  ban_time: 300  # 5 minutes
 
 storage:
   postgres:

@@ -1,8 +1,26 @@
 ##
-# ADDITIONAL CONFIGURATION
+# ADDITIONAL APPS
 #
 version: '3.9'
 
+##
+# SECRETS
+#
+secrets:
+  plex_claim:
+    file: ${DOCKER_DIR}/secrets/plex_claim_token
+
+##
+# EXTENSION FIELDS
+#
+x-environment: &pgid-puid-tz
+  PGID: ${PGID}
+  PUID: ${PUID}
+  TZ: ${TZ}
+
+##
+# SERVICES
+#
 services:
   ##
   # Glances
@@ -12,6 +30,7 @@ services:
   glances:
     container_name: glances
     environment:
+      <<: *pgid-puid-tz
       GLANCES_OPT: '-w'
       DOCKER_HOST: tcp://socket_proxy:2375
     image: nicolargo/glances:latest
@@ -23,11 +42,13 @@ services:
       - traefik.http.routers.glances-rtr.service=glances-svc
       - traefik.http.services.glances-svc.loadbalancer.server.port=61208
     networks:
-      - default
-      - reverse_proxy
-      - socket_proxy
+      default:
+      reverse_proxy:
+      socket_proxy:
     pid: host
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
 
   ##
   # Heimdall
@@ -38,9 +59,7 @@ services:
     image: lscr.io/linuxserver/heimdall
     container_name: heimdall
     environment:
-      - PUID=${PLEX_UID}
-      - PGID=${PLEX_GID}
-      - TZ=${TZ}
+      <<: *pgid-puid-tz
     labels:
       - traefik.enable=true
       - traefik.http.routers.heimdall-rtr.entrypoints=https
@@ -49,7 +68,7 @@ services:
       - traefik.http.routers.heimdall-rtr.service=heimdall-svc
       - traefik.http.services.heimdall-svc.loadbalancer.server.port=80
     networks:
-      - reverse_proxy
+      reverse_proxy:
     volumes:
       - $DOCKER_DIR/appdata/heimdall:/config
 
@@ -61,11 +80,10 @@ services:
   plex:
     container_name: plex
     environment:
-      - ADVERTISE_IP=${ADVERTISE_IP}
-      - HOSTNAME="Plex"
-      - PLEX_CLAIM=${PLEX_CLAIM}
-      - PGID=${PLEX_GID}
-      - PUID=${PLEX_UID}
+      <<: *pgid-puid-tz
+      ADVERTISE_IP: ${HOST_IP}:32400
+      HOSTNAME: "Plex"
+      PLEX_CLAIM: /run/secrets/plex_claim
     image: plexinc/pms-docker:1.25.4.5487-648a8f9f9
     labels:
       - traefik.enable=true
@@ -83,8 +101,6 @@ services:
       - traefik.http.services.plex-svc.loadbalancer.server.port=32400
     networks:
       reverse_proxy:
-      socket_proxy:
-    restart: unless-stopped
     ports:
       # TCP
       - target: 32400
@@ -124,6 +140,9 @@ services:
         published: 32414
         protocol: udp
         mode: host
+    restart: unless-stopped
+    secrets:
+      - plex_claim
     volumes:
       - ${DOCKER_DIR}/appdata/plex/config:/config
       - ${DOCKER_DIR}/appdata/plex/tmp:/transcode
@@ -137,6 +156,8 @@ services:
   portainer:
     command: -H tcp://socket_proxy:2375
     container_name: portainer
+    environment:
+      <<: *pgid-puid-tz
     image: portainer/portainer-ce:2.11.1
     labels:
       - traefik.enable=true
@@ -146,8 +167,10 @@ services:
       - traefik.http.routers.portainer-rtr.service=portainer-svc
       - traefik.http.services.portainer-svc.loadbalancer.server.port=9000
     networks:
-      - reverse_proxy
-      - socket_proxy
+      reverse_proxy:
+      socket_proxy:
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
     volumes:
       - ${DOCKER_DIR}/appdata/portainer/data:/data
