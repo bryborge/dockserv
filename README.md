@@ -1,5 +1,7 @@
 <div align="center">
   <br />
+  <img src="./docs/imgs/logo.png" alt="DockServ Logo" width="150" height="150" />
+  <br />
   <h1 align="center">DockServ</h1>
   <p align="center">
     A centralized place to define, manage, and orchestrate home server applications behind a reverse proxy.
