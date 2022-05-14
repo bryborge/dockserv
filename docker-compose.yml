@@ -179,7 +179,7 @@ services:
       ADGUARD_IP: ${ADGUARD_IP}
       ADGUARD_PORT: ${ADGUARD_PORT}
       CF_API_KEY: /run/secrets/cloudflare_api_key
-      CLOUDFLARE_EMAIL: /run/secrets/cloudflare_email
+      CLOUDFLARE_EMAIL: ${CLOUDFLARE_EMAIL}
       DOMAIN_NAME: ${DOMAIN_NAME}
     image: traefik:v2.6.0
     labels:
