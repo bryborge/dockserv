@@ -12,5 +12,6 @@ http:
   services:
     unifi-svc:
       loadBalancer:
+        passHostHeader: true
         servers:
           - url: "http://{{ env "UNIFI_IP" }}:{{ env "UNIFI_PORT" }}"
