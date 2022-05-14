@@ -24,6 +24,10 @@ secrets:
     file: ${DOCKER_DIR}/secrets/authelia_storage_encryption_key
   authelia_storage_postgres_password:
     file: ${DOCKER_DIR}/secrets/authelia_storage_postgres_password
+  cloudflare_api_key:
+    file: ${DOCKER_DIR}/secrets/cloudflare_api_key
+  cloudflare_email:
+    file: ${DOCKER_DIR}/secrets/cloudflare_email
   postgres_default_password:
     file: ${DOCKER_DIR}/secrets/postgres_default_password
 
@@ -149,8 +153,8 @@ services:
     environment:
       ADGUARD_IP: ${ADGUARD_IP}
       ADGUARD_PORT: ${ADGUARD_PORT}
-      CF_API_KEY: ${CLOUDFLARE_API_KEY}
-      CLOUDFLARE_EMAIL: ${CLOUDFLARE_EMAIL}
+      CF_API_KEY: /run/secrets/cloudflare_api_key
+      CLOUDFLARE_EMAIL: /run/secrets/cloudflare_email
       DOMAIN_NAME: ${DOMAIN_NAME}
     image: traefik:v2.6.0
     labels:
@@ -189,6 +193,9 @@ services:
         protocol: tcp
         mode: host
     restart: unless-stopped
+    secrets:
+      - cloudflare_email
+      - cloudflare_api_key
     volumes:
       - ${DOCKER_DIR}/appdata/traefik/rules:/etc/traefik/rules
       - ${DOCKER_DIR}/appdata/traefik/acme:/etc/traefik/acme
