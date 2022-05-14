@@ -1,8 +1,11 @@
 ##
-# BASE CONFIGURATION
+# CORE APPS
 #
 version: '3.9'
 
+##
+# NETWORKS
+#
 networks:
   default:
     driver: bridge
@@ -13,6 +16,9 @@ networks:
     driver: bridge
     name: socket_proxy
 
+##
+# SECRETS
+#
 secrets:
   authelia_jwt_secret:
     file: ${DOCKER_DIR}/secrets/authelia_jwt_secret
@@ -31,17 +37,30 @@ secrets:
   postgres_default_password:
     file: ${DOCKER_DIR}/secrets/postgres_default_password
 
+##
+# EXTENSION FIELDS
+#
 x-environment: &pgid-puid-tz
   PGID: ${PGID}
   PUID: ${PUID}
   TZ: ${TZ}
 
+x-network-and-security: &network-and-security
+  networks:
+    - reverse_proxy
+  security_opt:
+    - no-new-privileges:true
+
+##
+# SERVICES
+#
 services:
   ##
   # Authelia
   #   An open-source full-featured authentication server.
   #   For more info: https://hub.docker.com/r/authelia/authelia
   authelia:
+    <<: *network-and-security
     container_name: authelia
     depends_on:
       - postgres
@@ -126,6 +145,7 @@ services:
   #     - https://doc.traefik.io/traefik/
   #     - https://hub.docker.com/_/traefik
   traefik:
+    <<: *network-and-security
     command:
       # Traefik CLi Documentation: https://doc.traefik.io/traefik/reference/static-configuration/cli-ref/
       - --accessLog=true
@@ -188,7 +208,6 @@ services:
       - traefik.http.routers.traefik-rtr.service=api@internal
       - traefik.http.routers.traefik-rtr.tls.certresolver=dns-cloudflare
     networks:
-      reverse_proxy:
       socket_proxy:
     ports:
       - target: 80
@@ -214,13 +233,12 @@ services:
   #   For more info:
   #     - https://www.postgresql.org/
   postgres:
+    <<: *network-and-security
     container_name: postgres
     environment:
       <<: *pgid-puid-tz
       POSTGRES_PASSWORD: /run/secrets/postgres_default_password
     image: postgres:12.10
-    networks:
-      reverse_proxy:
     ports:
       - target: 5432
         published: 5432
@@ -239,11 +257,10 @@ services:
   #   For more info:
   #     - https://redis.io
   redis:
+    <<: *network-and-security
     container_name: redis
     entrypoint: redis-server /usr/local/etc/redis/redis.conf
     image: redis:6.2.6
-    networks:
-      reverse_proxy:
     ports:
       - target: 6379
         published: 6379
