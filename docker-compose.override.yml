@@ -11,6 +11,20 @@ secrets:
     file: ${DOCKER_DIR}/secrets/plex_claim_token
 
 ##
+# EXTENSION FIELDS
+#
+x-environment: &pgid-puid-tz
+  PGID: ${PGID}
+  PUID: ${PUID}
+  TZ: ${TZ}
+
+x-network-and-security: &network-and-security
+  networks:
+    - reverse_proxy
+  security_opt:
+    - no-new-privileges:true
+
+##
 # SERVICES
 #
 services:
