@@ -175,6 +175,8 @@ services:
       CF_API_KEY: /run/secrets/cloudflare_api_key
       CLOUDFLARE_EMAIL: ${CLOUDFLARE_EMAIL}
       DOMAIN_NAME: ${DOMAIN_NAME}
+      UNIFI_IP: ${UNIFI_IP}
+      UNIFI_PORT: ${UNIFI_PORT}
     image: traefik:v2.6.0
     labels:
       - traefik.enable=true
