@@ -81,8 +81,6 @@ services:
       - traefik.http.routers.authelia-rtr.middlewares=chain-authelia@file
       - traefik.http.routers.authelia-rtr.service=authelia-svc
       - traefik.http.services.authelia-svc.loadbalancer.server.port=9091
-    networks:
-      - reverse_proxy
     restart: unless-stopped
     secrets:
       - authelia_jwt_secret
