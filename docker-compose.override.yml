@@ -16,6 +16,7 @@ services:
   glances:
     container_name: glances
     environment:
+      <<: *pgid-puid-tz
       GLANCES_OPT: '-w'
       DOCKER_HOST: tcp://socket_proxy:2375
     image: nicolargo/glances:latest
@@ -42,9 +43,7 @@ services:
     image: lscr.io/linuxserver/heimdall
     container_name: heimdall
     environment:
-      PUID: ${PUID}
-      PGID: ${PGID}
-      TZ: ${TZ}
+      <<: *pgid-puid-tz
     labels:
       - traefik.enable=true
       - traefik.http.routers.heimdall-rtr.entrypoints=https
@@ -65,11 +64,10 @@ services:
   plex:
     container_name: plex
     environment:
+      <<: *pgid-puid-tz
       ADVERTISE_IP: ${HOST_IP}:32400
       HOSTNAME: "Plex"
       PLEX_CLAIM: /run/secrets/plex_claim
-      PGID: ${PGID}
-      PUID: ${PUID}
     image: plexinc/pms-docker:1.25.4.5487-648a8f9f9
     labels:
       - traefik.enable=true
@@ -142,6 +140,8 @@ services:
   portainer:
     command: -H tcp://socket_proxy:2375
     container_name: portainer
+    environment:
+      <<: *pgid-puid-tz
     image: portainer/portainer-ce:2.11.1
     labels:
       - traefik.enable=true

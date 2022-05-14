@@ -31,6 +31,11 @@ secrets:
   postgres_default_password:
     file: ${DOCKER_DIR}/secrets/postgres_default_password
 
+x-environment: &pgid-puid-tz
+  PGID: ${PGID}
+  PUID: ${PUID}
+  TZ: ${TZ}
+
 services:
   ##
   # Authelia
@@ -42,6 +47,7 @@ services:
       - postgres
       - redis
     environment:
+      <<: *pgid-puid-tz
       AUTHELIA_JWT_SECRET_FILE: /run/secrets/authelia_jwt_secret
       AUTHELIA_SESSION_REDIS_PASSWORD_FILE: /run/secrets/authelia_session_redis_password
       AUTHELIA_SESSION_SECRET_FILE: /run/secrets/authelia_session_secret
@@ -151,6 +157,7 @@ services:
       - --providers.file.watch=true # watch top-level rules/ dir for file changes
     container_name: traefik
     environment:
+      <<: *pgid-puid-tz
       ADGUARD_IP: ${ADGUARD_IP}
       ADGUARD_PORT: ${ADGUARD_PORT}
       CF_API_KEY: /run/secrets/cloudflare_api_key
@@ -209,6 +216,7 @@ services:
   postgres:
     container_name: postgres
     environment:
+      <<: *pgid-puid-tz
       POSTGRES_PASSWORD: /run/secrets/postgres_default_password
     image: postgres:12.10
     networks:
