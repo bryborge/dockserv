@@ -1,0 +1,14 @@
+http:
+  routers:
+    portainer-rtr:
+      entryPoints:
+        - https
+      middlewares:
+        - chain-authelia
+      rule: "Host(`portainer.{{ env "DOMAIN_NAME" }}`)"
+      service: portainer-svc
+  services:
+    portainer-svc:
+      loadBalancer:
+        server:
+          port: 9000
