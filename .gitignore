@@ -36,8 +36,7 @@ appdata/redis/data/*.aof
 appdata/redis/data/*.rdb
 
 # Secrets
-secrets/authelia_*
-secrets/postgres_*
+secrets/*
 
 # Traefik
 appdata/traefik/log/*.log
