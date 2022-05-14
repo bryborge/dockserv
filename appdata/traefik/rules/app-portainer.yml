@@ -10,5 +10,5 @@ http:
   services:
     portainer-svc:
       loadBalancer:
-        server:
-          port: 9000
+        servers:
+          url: "http://portainer:80"
