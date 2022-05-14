@@ -50,7 +50,7 @@ session:
 regulation:
   max_retries: 3
   find_time: 120 # 2 minutes
-  ban_time: 300 # 5 minutes
+  ban_time: 300  # 5 minutes
 
 storage:
   postgres:
