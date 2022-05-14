@@ -32,8 +32,6 @@ secrets:
     file: ${DOCKER_DIR}/secrets/authelia_storage_postgres_password
   cloudflare_api_key:
     file: ${DOCKER_DIR}/secrets/cloudflare_api_key
-  cloudflare_email:
-    file: ${DOCKER_DIR}/secrets/cloudflare_email
   postgres_default_password:
     file: ${DOCKER_DIR}/secrets/postgres_default_password
 
@@ -215,7 +213,6 @@ services:
         mode: host
     restart: unless-stopped
     secrets:
-      - cloudflare_email
       - cloudflare_api_key
     security_opt:
       - no-new-privileges:true
