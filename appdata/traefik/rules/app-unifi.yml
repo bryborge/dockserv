@@ -8,6 +8,7 @@ http:
       rule: "Host(`unifi.{{ env "DOMAIN_NAME" }}`)"
       service: unifi-svc
       tls:
+        certResolver: dns-cloudflare
   services:
     unifi-svc:
       loadBalancer:

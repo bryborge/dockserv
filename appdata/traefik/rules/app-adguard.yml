@@ -8,6 +8,7 @@ http:
       rule: "Host(`adguard.{{ env "DOMAIN_NAME" }}`)"
       service: adguard-svc
       tls:
+        certResolver: dns-cloudflare
   services:
     adguard-svc:
       loadBalancer:
