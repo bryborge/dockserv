@@ -14,4 +14,4 @@ http:
       loadBalancer:
         passHostHeader: true
         servers:
-          - url: "https://{{ env "UNIFI_IP" }}:{{ env "UNIFI_PORT" }}"
+          - address: "https://{{ env "UNIFI_IP" }}:{{ env "UNIFI_PORT" }}"
