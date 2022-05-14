@@ -45,12 +45,6 @@ x-environment: &pgid-puid-tz
   PUID: ${PUID}
   TZ: ${TZ}
 
-x-network-and-security: &network-and-security
-  networks:
-    - reverse_proxy
-  security_opt:
-    - no-new-privileges:true
-
 ##
 # SERVICES
 #
@@ -60,7 +54,6 @@ services:
   #   An open-source full-featured authentication server.
   #   For more info: https://hub.docker.com/r/authelia/authelia
   authelia:
-    <<: *network-and-security
     container_name: authelia
     depends_on:
       - postgres
@@ -81,6 +74,8 @@ services:
       - traefik.http.routers.authelia-rtr.middlewares=chain-authelia@file
       - traefik.http.routers.authelia-rtr.service=authelia-svc
       - traefik.http.services.authelia-svc.loadbalancer.server.port=9091
+    networks:
+      - reverse_proxy
     restart: unless-stopped
     secrets:
       - authelia_jwt_secret
@@ -88,6 +83,8 @@ services:
       - authelia_session_secret
       - authelia_storage_encryption_key
       - authelia_storage_postgres_password
+    security_opt:
+      - no-new-privileges:true
     volumes:
       - ${DOCKER_DIR}/appdata/authelia:/config
 
@@ -143,7 +140,6 @@ services:
   #     - https://doc.traefik.io/traefik/
   #     - https://hub.docker.com/_/traefik
   traefik:
-    <<: *network-and-security
     command:
       # Traefik CLi Documentation: https://doc.traefik.io/traefik/reference/static-configuration/cli-ref/
       - --accessLog=true
@@ -206,6 +202,7 @@ services:
       - traefik.http.routers.traefik-rtr.service=api@internal
       - traefik.http.routers.traefik-rtr.tls.certresolver=dns-cloudflare
     networks:
+      reverse_proxy:
       socket_proxy:
     ports:
       - target: 80
@@ -220,6 +217,8 @@ services:
     secrets:
       - cloudflare_email
       - cloudflare_api_key
+    security_opt:
+      - no-new-privileges:true
     volumes:
       - ${DOCKER_DIR}/appdata/traefik/rules:/etc/traefik/rules
       - ${DOCKER_DIR}/appdata/traefik/acme:/etc/traefik/acme
@@ -231,12 +230,13 @@ services:
   #   For more info:
   #     - https://www.postgresql.org/
   postgres:
-    <<: *network-and-security
     container_name: postgres
     environment:
       <<: *pgid-puid-tz
       POSTGRES_PASSWORD: /run/secrets/postgres_default_password
     image: postgres:12.10
+    networks:
+      reverse_proxy:
     ports:
       - target: 5432
         published: 5432
@@ -245,6 +245,8 @@ services:
     restart: unless-stopped
     secrets:
       - postgres_default_password
+    security_opt:
+      - no-new-privileges:true
     volumes:
       - ${DOCKER_DIR}/appdata/postgres/data:/var/lib/postgresql/data
       - ${DOCKER_DIR}/appdata/postgres/initdb.d:/docker-entrypoint-initdb.d
@@ -255,15 +257,18 @@ services:
   #   For more info:
   #     - https://redis.io
   redis:
-    <<: *network-and-security
     container_name: redis
     entrypoint: redis-server /usr/local/etc/redis/redis.conf
     image: redis:6.2.6
+    networks:
+      reverse_proxy:
     ports:
       - target: 6379
         published: 6379
         protocol: tcp
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
     volumes:
       - ${DOCKER_DIR}/appdata/redis/data:/data
       - ${DOCKER_DIR}/appdata/redis/redis.conf:/usr/local/etc/redis/redis.conf

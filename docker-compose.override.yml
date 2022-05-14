@@ -18,12 +18,6 @@ x-environment: &pgid-puid-tz
   PUID: ${PUID}
   TZ: ${TZ}
 
-x-network-and-security: &network-and-security
-  networks:
-    - reverse_proxy
-  security_opt:
-    - no-new-privileges:true
-
 ##
 # SERVICES
 #
@@ -34,7 +28,6 @@ services:
   #   For more info:
   #     - https://nicolargo.github.io/glances/
   glances:
-    <<: *network-and-security
     container_name: glances
     environment:
       <<: *pgid-puid-tz
@@ -49,10 +42,13 @@ services:
       - traefik.http.routers.glances-rtr.service=glances-svc
       - traefik.http.services.glances-svc.loadbalancer.server.port=61208
     networks:
-      - default
-      - socket_proxy
+      default:
+      reverse_proxy:
+      socket_proxy:
     pid: host
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
 
   ##
   # Heimdall
@@ -60,7 +56,6 @@ services:
   #   For more info:
   #     - https://heimdall.site/
   heimdall:
-    <<: *network-and-security
     image: lscr.io/linuxserver/heimdall
     container_name: heimdall
     environment:
@@ -72,6 +67,8 @@ services:
       - traefik.http.routers.heimdall-rtr.middlewares=chain-authelia@file
       - traefik.http.routers.heimdall-rtr.service=heimdall-svc
       - traefik.http.services.heimdall-svc.loadbalancer.server.port=80
+    networks:
+      reverse_proxy:
     volumes:
       - $DOCKER_DIR/appdata/heimdall:/config
 
@@ -81,7 +78,6 @@ services:
   #   For more info:
   #     - https://www.plex.tv/
   plex:
-    <<: *network-and-security
     container_name: plex
     environment:
       <<: *pgid-puid-tz
@@ -103,6 +99,8 @@ services:
       - traefik.http.routers.plex-rtr.rule=Host(`plex.${DOMAIN_NAME}`)
       - traefik.http.routers.plex-rtr.tls.certresolver=dns-cloudflare
       - traefik.http.services.plex-svc.loadbalancer.server.port=32400
+    networks:
+      reverse_proxy:
     ports:
       # TCP
       - target: 32400
@@ -156,7 +154,6 @@ services:
   #   For more info:
   #     - https://www.portainer.io/
   portainer:
-    <<: *network-and-security
     command: -H tcp://socket_proxy:2375
     container_name: portainer
     environment:
@@ -170,7 +167,10 @@ services:
       - traefik.http.routers.portainer-rtr.service=portainer-svc
       - traefik.http.services.portainer-svc.loadbalancer.server.port=9000
     networks:
-      - socket_proxy
+      reverse_proxy:
+      socket_proxy:
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
     volumes:
       - ${DOCKER_DIR}/appdata/portainer/data:/data
