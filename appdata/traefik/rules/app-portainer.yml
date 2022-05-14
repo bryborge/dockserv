@@ -11,4 +11,4 @@ http:
     portainer-svc:
       loadBalancer:
         servers:
-          url: "http://localhost:9000"
+          url: "http://127.0.0.1:9000"
