@@ -9,6 +9,8 @@ version: '3.9'
 secrets:
   plex_claim:
     file: ${DOCKER_DIR}/secrets/plex_claim_token
+  redis_default_password:
+    file: ${DOCKER_DIR}/secrets/redis_default_password
 
 ##
 # EXTENSION FIELDS
