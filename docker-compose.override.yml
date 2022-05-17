@@ -80,8 +80,11 @@ services:
     container_name: nextcloud
     depends_on:
       - postgres
+      - redis
     environment:
       <<: *pgid-puid-tz
+      POSTGRES_HOST: postgres
+      REDIS_HOST: redis
     image: nextcloud:24.0.0
     labels:
       - traefik.enable=true
