@@ -85,16 +85,16 @@ services:
     image: nextcloud:24.0.0
     labels:
       - traefik.enable=true
-      # - traefik.http.middlewares.custom.headers.browserXSSFilter=true
-      # - traefik.http.middlewares.custom.headers.contentTypeNosniff=true
-      # - traefik.http.middlewares.custom.headers.forceSTSHeader=true
-      # - traefik.http.middlewares.custom.headers.frameDeny=true
-      # - traefik.http.middlewares.custom.headers.sslredirect=true
-      # - traefik.http.middlewares.custom.headers.stsIncludeSubdomains=true
-      # - traefik.http.middlewares.custom.headers.stsPreload=true
-      # - traefik.http.middlewares.custom.headers.stsSeconds=315360000
+      - traefik.http.middlewares.custom.headers.browserXSSFilter=true
+      - traefik.http.middlewares.custom.headers.contentTypeNosniff=true
+      - traefik.http.middlewares.custom.headers.forceSTSHeader=true
+      - traefik.http.middlewares.custom.headers.frameDeny=true
+      - traefik.http.middlewares.custom.headers.sslredirect=true
+      - traefik.http.middlewares.custom.headers.stsIncludeSubdomains=true
+      - traefik.http.middlewares.custom.headers.stsPreload=true
+      - traefik.http.middlewares.custom.headers.stsSeconds=315360000
       - traefik.http.routers.nextcloud-rtr.entrypoints=https
-      - traefik.http.routers.nextcloud-rtr.rule=Host(`apps.${DOMAIN_NAME}`)
+      - traefik.http.routers.nextcloud-rtr.rule=Host(`nextcloud.${DOMAIN_NAME}`)
       - traefik.http.routers.nextcloud-rtr.middlewares=chain-authelia@file
       - traefik.http.routers.nextcloud-rtr.service=nextcloud-svc
       - traefik.http.services.nextcloud-svc.loadbalancer.server.port=80
