@@ -7,9 +7,8 @@ http:
         - chain-authelia
       rule: "Host(`portainer.{{ env "DOMAIN_NAME" }}`)"
       service: portainer-svc
-      tls:
   services:
     portainer-svc:
       loadBalancer:
         server:
-          port: "9000"
+          - port: "9000"
