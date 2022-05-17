@@ -56,10 +56,10 @@ services:
   #   For more info:
   #     - https://heimdall.site/
   heimdall:
-    image: lscr.io/linuxserver/heimdall
     container_name: heimdall
     environment:
       <<: *pgid-puid-tz
+    image: lscr.io/linuxserver/heimdall
     labels:
       - traefik.enable=true
       - traefik.http.routers.heimdall-rtr.entrypoints=https
@@ -69,8 +69,47 @@ services:
       - traefik.http.services.heimdall-svc.loadbalancer.server.port=80
     networks:
       reverse_proxy:
+    restart: unless-stopped
     volumes:
       - $DOCKER_DIR/appdata/heimdall:/config
+
+  ##
+  #
+  #
+  nextcloud:
+    container_name: nextcloud
+    depends_on:
+      - postgres
+    environment:
+      <<: *pgid-puid-tz
+    image: nextcloud:24.0.0
+    labels:
+      - traefik.enable=true
+      - traefik.http.middlewares.custom.headers.browserXSSFilter=true
+      - traefik.http.middlewares.custom.headers.contentTypeNosniff=true
+      - traefik.http.middlewares.custom.headers.forceSTSHeader=true
+      - traefik.http.middlewares.custom.headers.frameDeny=true
+      - traefik.http.middlewares.custom.headers.sslredirect=true
+      - traefik.http.middlewares.custom.headers.stsIncludeSubdomains=true
+      - traefik.http.middlewares.custom.headers.stsPreload=true
+      - traefik.http.middlewares.custom.headers.stsSeconds=315360000
+      - traefik.http.routers.nextcloud-rtr.entrypoints=https
+      - traefik.http.routers.nextcloud-rtr.rule=Host(`apps.${DOMAIN_NAME}`)
+      - traefik.http.routers.nextcloud-rtr.middlewares=chain-authelia@file
+      - traefik.http.routers.nextcloud-rtr.service=nextcloud-svc
+      - traefik.http.services.nextcloud-svc.loadbalancer.server.port=80
+    networks:
+      reverse_proxy:
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - $DOCKER_DIR/appdata/nextcloud/html:/var/www/html
+      - $DOCKER_DIR/appdata/nextcloud/config:/var/www/html/config
+      - $DOCKER_DIR/appdata/nextcloud/custom_apps:/var/www/html/custom_apps
+      - $DOCKER_DIR/appdata/nextcloud/data:/var/www/html/data
+      - $DOCKER_DIR/appdata/nextcloud/themes:/var/www/html/themes
+      - /etc/localtime:/etc/localtime:ro
 
   ##
   # Plex
@@ -143,6 +182,8 @@ services:
     restart: unless-stopped
     secrets:
       - plex_claim
+    security_opt:
+      - no-new-privileges:true
     volumes:
       - ${DOCKER_DIR}/appdata/plex/config:/config
       - ${DOCKER_DIR}/appdata/plex/tmp:/transcode
