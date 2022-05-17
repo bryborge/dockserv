@@ -8,36 +8,8 @@ acme.json
 .idea
 .vscode
 
-# Authelia
-appdata/authelia/configuration.yml
-appdata/authelia/notification.txt
-appdata/authelia/users.yml
-
-# Heimdall
-appdata/heimdall/*
-
-# Plex
-appdata/plex/config/Library
-
-# Portainer
-appdata/portainer/data/bin
-appdata/portainer/data/certs
-appdata/portainer/data/compose
-appdata/portainer/data/docker_config
-appdata/portainer/data/tls
-appdata/portainer/data/portainer.*
-
-# Postgres
-appdata/postgres/initdb.d/authelia-user-db.sh
-
-# Redis
-appdata/redis/redis.conf
-appdata/redis/data/*.aof
-appdata/redis/data/*.rdb
+# Application Data
+appdata/*
 
 # Secrets
 secrets/*
-
-# Traefik
-appdata/traefik/log/*.log
-appdata/traefik/rules/web-middlewares.yml
