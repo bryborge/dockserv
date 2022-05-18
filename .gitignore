@@ -8,8 +8,8 @@ acme.json
 .idea
 .vscode
 
-# Application Data
-appdata/*
+# # Application Data
+# appdata/*
 
 # Secrets
 secrets/*

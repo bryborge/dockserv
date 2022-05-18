@@ -25,6 +25,31 @@ x-environment: &pgid-puid-tz
 #
 services:
   ##
+  #
+  #
+  gitlab:
+    image: gitlab/gitlab-ce:latest
+    restart: unless-stopped
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url "https://gitlab.${DOMAIN_NAME}"
+        nginx['listen_https'] = false
+        nginx['listen_port'] = 80
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.gitlab-rtr.entrypoints=https
+      - traefik.http.routers.gitlab-rtr.rule=Host(`gitlab.${DOMAIN_NAME}`)
+      - traefik.http.routers.gitlab-rtr.middlewares=chain-authelia@file
+      - traefik.http.routers.gitlab-rtr.service=gitlab-svc
+      - traefik.http.services.gitlab-svc.loadbalancer.server.port=9000
+    networks:
+      reverse_proxy:
+    volumes:
+      - $DOCKER_DIR/appdata/gitlab/config:/etc/gitlab
+      - $DOCKER_DIR/appdata/gitlab/logs:/var/log/gitlab
+      - $DOCKER_DIR/appdata/gitlab/data:/var/opt/gitlab
+
+  ##
   # Glances
   #   Web UI for system information monitoring.
   #   For more info:
