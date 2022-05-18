@@ -87,6 +87,24 @@ services:
       - ${DOCKER_DIR}/appdata/authelia:/config
 
   ##
+  # Cloudflare DDNS Updater
+  #   A small amd64/ARM Docker container that allows you to use CloudFlare as a DDNS / DynDNS Provider.
+  #   For more info: https://hub.docker.com/r/oznu/cloudflare-ddns
+  ddns_updater:
+    container_name: ddns_updater
+    environment:
+      API_KEY: /run/secrets/cloudflare_api_key
+      ZONE: ${DOMAIN_NAME}
+      PROXIED: false
+      RRTYPE: A
+      DELETE_ON_STOP: false
+      DNS_SERVER: 1.1.1.1
+    image: oznu/cloudflare-ddns:latest
+    restart: always
+    secrets:
+      - cloudflare_api_key
+
+  ##
   # Docker Socket Proxy
   #   A security-enhanced proxy for the Docker Socket.
   #   For more info: https://hub.docker.com/r/tecnativa/docker-socket-proxy
