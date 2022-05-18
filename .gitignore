@@ -23,7 +23,7 @@ appdata/heimdall/*
 
 # Nextcloud
 appdata/nextcloud/config/*
-appdata/nextcloud/custom_data/*
+appdata/nextcloud/custom_apps/*
 appdata/nextcloud/data/*
 appdata/nextcloud/html/*
 appdata/nextcloud/themes/*
