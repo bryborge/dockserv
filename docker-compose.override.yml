@@ -28,7 +28,7 @@ services:
   #
   #
   gitlab:
-    image: gitlab/gitlab-ce:latest
+    image: gitlab/gitlab-ce:14.10.2-ce.0
     restart: unless-stopped
     environment:
       GITLAB_OMNIBUS_CONFIG: |
@@ -41,13 +41,13 @@ services:
       - traefik.http.routers.gitlab-rtr.rule=Host(`gitlab.${DOMAIN_NAME}`)
       - traefik.http.routers.gitlab-rtr.middlewares=chain-authelia@file
       - traefik.http.routers.gitlab-rtr.service=gitlab-svc
-      - traefik.http.services.gitlab-svc.loadbalancer.server.port=9000
+      - traefik.http.services.gitlab-svc.loadbalancer.server.port=80
     networks:
       reverse_proxy:
     volumes:
       - $DOCKER_DIR/appdata/gitlab/config:/etc/gitlab
-      - $DOCKER_DIR/appdata/gitlab/logs:/var/log/gitlab
       - $DOCKER_DIR/appdata/gitlab/data:/var/opt/gitlab
+      - $DOCKER_DIR/appdata/gitlab/logs:/var/log/gitlab
 
   ##
   # Glances
