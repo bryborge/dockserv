@@ -32,6 +32,8 @@ secrets:
     file: ${DOCKER_DIR}/secrets/authelia_storage_postgres_password
   cloudflare_api_key:
     file: ${DOCKER_DIR}/secrets/cloudflare_api_key
+  ddns_updater_cloudflare_api_token:
+    file: ${DOCKER_DIR}/secrets/ddns_updater_cloudflare_api_token
   postgres_default_password:
     file: ${DOCKER_DIR}/secrets/postgres_default_password
 
@@ -93,12 +95,12 @@ services:
   ddns_updater:
     container_name: ddns_updater
     environment:
-      API_KEY_FILE: /run/secrets/cloudflare_api_key
+      API_KEY_FILE: /run/secrets/ddns_updater_cloudflare_api_token
       ZONE: ${DOMAIN_NAME}
     image: oznu/cloudflare-ddns:latest
     restart: always
     secrets:
-      - cloudflare_api_key
+      - ddns_updater_cloudflare_api_token
 
   ##
   # Docker Socket Proxy
