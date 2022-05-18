@@ -93,12 +93,8 @@ services:
   ddns_updater:
     container_name: ddns_updater
     environment:
-      API_KEY: /run/secrets/cloudflare_api_key
+      API_KEY_FILE: /run/secrets/cloudflare_api_key
       ZONE: ${DOMAIN_NAME}
-      PROXIED: false
-      RRTYPE: A
-      DELETE_ON_STOP: false
-      DNS_SERVER: 1.1.1.1
     image: oznu/cloudflare-ddns:latest
     restart: always
     secrets:
