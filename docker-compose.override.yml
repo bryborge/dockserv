@@ -56,8 +56,8 @@ services:
     networks:
       reverse_proxy:
     ports:
-      - target: 2222
-        published: 22
+      - target: 22
+        published: 2222
         protocol: tcp
         mode: host
     restart: unless-stopped
