@@ -33,7 +33,7 @@ secrets:
     file: ${DOCKER_DIR}/secrets/cloudflare_api_key
   ddns_updater_cloudflare_api_token:
     file: ${DOCKER_DIR}/secrets/ddns_updater_cloudflare_api_token
-  plex_claim:
+  plex_claim_token:
     file: ${DOCKER_DIR}/secrets/plex_claim_token
   postgres_default_password:
     file: ${DOCKER_DIR}/secrets/postgres_default_password
@@ -429,7 +429,7 @@ services:
       <<: *pgid-puid-tz
       ADVERTISE_IP: ${HOST_IP}:32400
       HOSTNAME: "Plex"
-      PLEX_CLAIM: /run/secrets/plex_claim
+      PLEX_CLAIM: /run/secrets/plex_claim_token
     image: plexinc/pms-docker:1.25.4.5487-648a8f9f9
     labels:
       <<: *traefik-common-middlewares
@@ -480,7 +480,7 @@ services:
         mode: host
     restart: unless-stopped
     secrets:
-      - plex_claim
+      - plex_claim_token
     security_opt:
       - no-new-privileges:true
     volumes:
