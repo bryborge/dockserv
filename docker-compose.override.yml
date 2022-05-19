@@ -25,18 +25,28 @@ x-environment: &pgid-puid-tz
 #
 services:
   ##
-  #
-  #
+  # GitLab
+  #   Platform for building and sharing software.
+  #   For more info:
+  #     - https://about.gitlab.com/
   gitlab:
     image: gitlab/gitlab-ce:14.10.2-ce.0
-    restart: unless-stopped
     environment:
+      <<: *pgid-puid-tz
       GITLAB_OMNIBUS_CONFIG: |
         external_url "https://gitlab.${DOMAIN_NAME}"
         nginx['listen_https'] = false
         nginx['listen_port'] = 80
     labels:
       - traefik.enable=true
+      - traefik.http.middlewares.custom.headers.browserXSSFilter=true
+      - traefik.http.middlewares.custom.headers.contentTypeNosniff=true
+      - traefik.http.middlewares.custom.headers.forceSTSHeader=true
+      - traefik.http.middlewares.custom.headers.frameDeny=true
+      - traefik.http.middlewares.custom.headers.sslredirect=true
+      - traefik.http.middlewares.custom.headers.stsIncludeSubdomains=true
+      - traefik.http.middlewares.custom.headers.stsPreload=true
+      - traefik.http.middlewares.custom.headers.stsSeconds=315360000
       - traefik.http.routers.gitlab-rtr.entrypoints=https
       - traefik.http.routers.gitlab-rtr.rule=Host(`gitlab.${DOMAIN_NAME}`)
       - traefik.http.routers.gitlab-rtr.middlewares=chain-authelia@file
@@ -44,6 +54,14 @@ services:
       - traefik.http.services.gitlab-svc.loadbalancer.server.port=80
     networks:
       reverse_proxy:
+    ports:
+      - target: 2222
+        published: 22
+        protocol: tcp
+        mode: host
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
     volumes:
       - $DOCKER_DIR/appdata/gitlab/config:/etc/gitlab
       - $DOCKER_DIR/appdata/gitlab/data:/var/opt/gitlab
