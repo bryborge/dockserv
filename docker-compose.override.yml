@@ -28,7 +28,7 @@ services:
   # GitLab
   #   Platform for building and sharing software.
   #   For more info:
-  #     - https://about.gitlab.com/
+  #     - https://docs.gitlab.com/
   gitlab:
     container_name: gitlab
     environment:
