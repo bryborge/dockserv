@@ -90,7 +90,7 @@ services:
       traefik.http.services.authelia-svc.loadbalancer.server.port: 9091
     networks:
       - reverse_proxy
-    restart: unless-stopped
+    restart: always
     secrets:
       - authelia_jwt_secret
       - authelia_session_redis_password
@@ -156,7 +156,7 @@ services:
         protocol: tcp
         mode: host
     privileged: true
-    restart: unless-stopped
+    restart: always
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
@@ -224,7 +224,7 @@ services:
         published: 443
         protocol: tcp
         mode: host
-    restart: unless-stopped
+    restart: always
     secrets:
       - cloudflare_api_key
     security_opt:
@@ -256,7 +256,7 @@ services:
         published: 5432
         protocol: tcp
         mode: host
-    restart: unless-stopped
+    restart: always
     secrets:
       - postgres_default_password
     security_opt:
@@ -280,7 +280,7 @@ services:
       - target: 6379
         published: 6379
         protocol: tcp
-    restart: unless-stopped
+    restart: always
     security_opt:
       - no-new-privileges:true
     volumes:
