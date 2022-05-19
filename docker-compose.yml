@@ -209,12 +209,10 @@ services:
     image: traefik:v2.6.0
     labels:
       <<: *traefik-common-middlewares
-      traefik.http.routers.traefik-rtr.middlewares:
-        - admin
-        - chain-authelia@file
       traefik.http.middlewares.redirect-to-https.redirectscheme.scheme: https
       traefik.http.routers.traefik-rtr.entrypoints: https
       traefik.http.routers.traefik-rtr.rule: Host(`traefik.${DOMAIN_NAME}`)
+      traefik.http.routers.traefik-rtr.middlewares: chain-authelia@file
       traefik.http.routers.traefik-rtr.service: api@internal
       traefik.http.routers.traefik-rtr.tls.certresolver: dns-cloudflare
     networks:
