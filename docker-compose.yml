@@ -5,8 +5,6 @@ version: '3.9'
 ################################################################################
 
 networks:
-  default:
-    driver: bridge
   reverse_proxy:
     driver: bridge
     name: reverse_proxy
@@ -351,7 +349,6 @@ services:
       traefik.http.routers.glances-rtr.service: glances-svc
       traefik.http.services.glances-svc.loadbalancer.server.port: 61208
     networks:
-      default:
       reverse_proxy:
       socket_proxy:
     pid: host
