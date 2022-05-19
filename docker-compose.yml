@@ -333,6 +333,34 @@ services:
       - $DOCKER_DIR/appdata/gitlab/logs:/var/log/gitlab
   
   ##
+  # Glances
+  #   Web UI for system information monitoring.
+  #   For more info:
+  #     - https://nicolargo.github.io/glances/
+  glances:
+    container_name: glances
+    environment:
+      <<: *pgid-puid-tz
+      GLANCES_OPT: '-w'
+      DOCKER_HOST: tcp://socket_proxy:2375
+    image: nicolargo/glances:latest
+    labels:
+      <<: *traefik-common-middlewares
+      traefik.http.routers.glances-rtr.entrypoints: https
+      traefik.http.routers.glances-rtr.rule: Host(`glances.${DOMAIN_NAME}`)
+      traefik.http.routers.glances-rtr.middlewares: chain-authelia@file
+      traefik.http.routers.glances-rtr.service: glances-svc
+      traefik.http.services.glances-svc.loadbalancer.server.port: 61208
+    networks:
+      default:
+      reverse_proxy:
+      socket_proxy:
+    pid: host
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+
+  ##
   # Heimdall
   #   A dashboard for all your web applications.
   #   For more info:
