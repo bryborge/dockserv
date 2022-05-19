@@ -483,7 +483,7 @@ services:
     volumes:
       - ${DOCKER_DIR}/appdata/plex/config:/config
       - ${DOCKER_DIR}/appdata/plex/tmp:/transcode
-      - /media/nas/media:/media
+      - ${MEDIA_DIR}:/media
 
   ##
   # Portainer
