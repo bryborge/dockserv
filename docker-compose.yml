@@ -214,7 +214,6 @@ services:
       traefik.http.routers.traefik-rtr.rule: Host(`traefik.${DOMAIN_NAME}`)
       traefik.http.routers.traefik-rtr.middlewares: chain-authelia@file
       traefik.http.routers.traefik-rtr.service: api@internal
-      traefik.http.routers.traefik-rtr.tls.certresolver: dns-cloudflare
     networks:
       reverse_proxy:
       socket_proxy:
@@ -436,7 +435,6 @@ services:
       <<: *traefik-common-middlewares
       traefik.http.routers.plex-rtr.entrypoints: https
       traefik.http.routers.plex-rtr.rule: Host(`plex.${DOMAIN_NAME}`)
-      traefik.http.routers.plex-rtr.tls.certresolver: dns-cloudflare
       traefik.http.routers.plex-rtr.service: plex-svc
       traefik.http.services.plex-svc.loadbalancer.server.port: 32400
     networks:
