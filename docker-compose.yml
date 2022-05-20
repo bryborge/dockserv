@@ -1,14 +1,10 @@
-##
-# CORE APPS
-#
 version: '3.9'
 
-##
-# NETWORKS
-#
+################################################################################
+#                                   NETWORKS                                   #
+################################################################################
+
 networks:
-  default:
-    driver: bridge
   reverse_proxy:
     driver: bridge
     name: reverse_proxy
@@ -16,9 +12,10 @@ networks:
     driver: bridge
     name: socket_proxy
 
-##
-# SECRETS
-#
+################################################################################
+#                                   SECRETS                                    #
+################################################################################
+
 secrets:
   authelia_jwt_secret:
     file: ${DOCKER_DIR}/secrets/authelia_jwt_secret
@@ -32,20 +29,39 @@ secrets:
     file: ${DOCKER_DIR}/secrets/authelia_storage_postgres_password
   cloudflare_api_key:
     file: ${DOCKER_DIR}/secrets/cloudflare_api_key
+  ddns_updater_cloudflare_api_token:
+    file: ${DOCKER_DIR}/secrets/ddns_updater_cloudflare_api_token
+  plex_claim_token:
+    file: ${DOCKER_DIR}/secrets/plex_claim_token
   postgres_default_password:
     file: ${DOCKER_DIR}/secrets/postgres_default_password
+  redis_default_password:
+    file: ${DOCKER_DIR}/secrets/redis_default_password
 
-##
-# EXTENSION FIELDS
-#
+################################################################################
+#                               EXTENSION FIELDS                               #
+################################################################################
+
 x-environment: &pgid-puid-tz
   PGID: ${PGID}
   PUID: ${PUID}
   TZ: ${TZ}
 
-##
-# SERVICES
-#
+x-common-labels: &traefik-common-middlewares
+  traefik.enable: true
+  traefik.http.middlewares.custom.headers.browserXSSFilter: true
+  traefik.http.middlewares.custom.headers.contentTypeNosniff: true
+  traefik.http.middlewares.custom.headers.forceSTSHeader: true
+  traefik.http.middlewares.custom.headers.frameDeny: true
+  traefik.http.middlewares.custom.headers.sslredirect: true
+  traefik.http.middlewares.custom.headers.stsIncludeSubdomains: true
+  traefik.http.middlewares.custom.headers.stsPreload: true
+  traefik.http.middlewares.custom.headers.stsSeconds: 315360000
+
+################################################################################
+#                                CORE SERVICES                                 #
+################################################################################
+
 services:
   ##
   # Authelia
@@ -65,16 +81,16 @@ services:
       AUTHELIA_STORAGE_POSTGRES_PASSWORD_FILE: /run/secrets/authelia_storage_postgres_password
     image: authelia/authelia:4.34.4
     labels:
-      - traefik.enable=true
-      - traefik.http.routers.authelia-rtr.entrypoints=https
-      - traefik.http.routers.authelia-rtr.rule=Host(`authelia.${DOMAIN_NAME}`)
-      - traefik.http.routers.authelia-rtr.tls=true
-      - traefik.http.routers.authelia-rtr.middlewares=chain-authelia@file
-      - traefik.http.routers.authelia-rtr.service=authelia-svc
-      - traefik.http.services.authelia-svc.loadbalancer.server.port=9091
+      <<: *traefik-common-middlewares
+      traefik.http.routers.authelia-rtr.entrypoints: https
+      traefik.http.routers.authelia-rtr.rule: Host(`authelia.${DOMAIN_NAME}`)
+      traefik.http.routers.authelia-rtr.tls: true
+      traefik.http.routers.authelia-rtr.middlewares: chain-authelia@file
+      traefik.http.routers.authelia-rtr.service: authelia-svc
+      traefik.http.services.authelia-svc.loadbalancer.server.port: 9091
     networks:
       - reverse_proxy
-    restart: unless-stopped
+    restart: always
     secrets:
       - authelia_jwt_secret
       - authelia_session_redis_password
@@ -87,6 +103,20 @@ services:
       - ${DOCKER_DIR}/appdata/authelia:/config
 
   ##
+  # Cloudflare DDNS Updater
+  #   A small amd64/ARM Docker container that allows you to use Cloudflare as a DDNS provider.
+  #   For more info: https://hub.docker.com/r/oznu/cloudflare-ddns
+  ddns_updater:
+    container_name: ddns_updater
+    environment:
+      API_KEY_FILE: /run/secrets/ddns_updater_cloudflare_api_token
+      ZONE: ${DOMAIN_NAME}
+    image: oznu/cloudflare-ddns:latest
+    restart: always
+    secrets:
+      - ddns_updater_cloudflare_api_token
+
+  ##
   # Docker Socket Proxy
   #   A security-enhanced proxy for the Docker Socket.
   #   For more info: https://hub.docker.com/r/tecnativa/docker-socket-proxy
@@ -94,8 +124,7 @@ services:
     container_name: socket_proxy
     environment:
       # Variables match the URL prefix (i.e. AUTH blocks access to /auth/* parts of the API, etc).
-      #   0 - revoke access
-      #   1 - grant access
+      # Revoke access (0), Grant access (1)
       AUTH: 0
       BUILD: 0
       CONFIGS: 0
@@ -127,7 +156,7 @@ services:
         protocol: tcp
         mode: host
     privileged: true
-    restart: unless-stopped
+    restart: always
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
@@ -177,28 +206,12 @@ services:
       DOMAIN_NAME: ${DOMAIN_NAME}
     image: traefik:v2.6.0
     labels:
-      - traefik.enable=true
-      - traefik.http.middlewares.custom.headers.browserXSSFilter=true
-      - traefik.http.middlewares.custom.headers.contentTypeNosniff=true
-      - traefik.http.middlewares.custom.headers.forceSTSHeader=true
-      - traefik.http.middlewares.custom.headers.frameDeny=true
-      - traefik.http.middlewares.custom.headers.sslredirect=true
-      - traefik.http.middlewares.custom.headers.stsIncludeSubdomains=true
-      - traefik.http.middlewares.custom.headers.stsPreload=true
-      - traefik.http.middlewares.custom.headers.stsSeconds=315360000
-      # Redirect to https
-      - traefik.http.routers.traefik-rtr.entrypoints=http
-      - traefik.http.routers.traefik-rtr.middlewares=admin
-      - traefik.http.routers.traefik-rtr.rule=HostRegexp(`{host:.+}`)
-      - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
-      # Routers
-      - traefik.http.routers.traefik-rtr.entrypoints=https
-      - traefik.http.routers.traefik-rtr.rule=Host(`traefik.${DOMAIN_NAME}`)
-      # Secure Dashboard w/ Authelia
-      - traefik.http.routers.traefik-rtr.middlewares=chain-authelia@file
-      # Services - API
-      - traefik.http.routers.traefik-rtr.service=api@internal
-      - traefik.http.routers.traefik-rtr.tls.certresolver=dns-cloudflare
+      <<: *traefik-common-middlewares
+      traefik.http.middlewares.redirect-to-https.redirectscheme.scheme: https
+      traefik.http.routers.traefik-rtr.entrypoints: https
+      traefik.http.routers.traefik-rtr.rule: Host(`traefik.${DOMAIN_NAME}`)
+      traefik.http.routers.traefik-rtr.middlewares: chain-authelia@file
+      traefik.http.routers.traefik-rtr.service: api@internal
     networks:
       reverse_proxy:
       socket_proxy:
@@ -211,7 +224,7 @@ services:
         published: 443
         protocol: tcp
         mode: host
-    restart: unless-stopped
+    restart: always
     secrets:
       - cloudflare_api_key
     security_opt:
@@ -220,6 +233,10 @@ services:
       - ${DOCKER_DIR}/appdata/traefik/rules:/etc/traefik/rules
       - ${DOCKER_DIR}/appdata/traefik/acme:/etc/traefik/acme
       - ${DOCKER_DIR}/appdata/traefik/log:/etc/traefik/log
+
+  ##############################################################################
+  #                              PERSISTENCE LAYER                             #
+  ##############################################################################
 
   ##
   # Postgres
@@ -239,7 +256,7 @@ services:
         published: 5432
         protocol: tcp
         mode: host
-    restart: unless-stopped
+    restart: always
     secrets:
       - postgres_default_password
     security_opt:
@@ -263,7 +280,7 @@ services:
       - target: 6379
         published: 6379
         protocol: tcp
-    restart: unless-stopped
+    restart: always
     security_opt:
       - no-new-privileges:true
     volumes:
@@ -271,3 +288,248 @@ services:
       - ${DOCKER_DIR}/appdata/redis/redis.conf:/usr/local/etc/redis/redis.conf
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
+
+  ##############################################################################
+  #                                APPLICATIONS                                #
+  ##############################################################################
+
+  ##
+  # Code Server
+  #   VS Code running on a remote server accessible through the browser.
+  #   For more info:
+  #     - https://github.com/coder/code-server
+  code:
+    container_name: code
+    environment:
+      <<: *pgid-puid-tz
+    image: lscr.io/linuxserver/code-server:latest
+    labels:
+      <<: *traefik-common-middlewares
+      traefik.http.routers.code-rtr.entrypoints: https
+      traefik.http.routers.code-rtr.rule: Host(`code.${DOMAIN_NAME}`)
+      traefik.http.routers.code-rtr.middlewares: chain-authelia@file
+      traefik.http.routers.code-rtr.service: code-svc
+      traefik.http.services.code-svc.loadbalancer.server.port: 8443
+    networks:
+      reverse_proxy:
+    volumes:
+      - ${DOCKER_DIR}/appdata/code:/config
+
+  ##
+  # GitLab
+  #   Platform for building and sharing software.
+  #   For more info:
+  #     - https://docs.gitlab.com/
+  gitlab:
+    container_name: gitlab
+    environment:
+      <<: *pgid-puid-tz
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url "https://gitlab.${DOMAIN_NAME}"
+        nginx['listen_https'] = false
+        nginx['listen_port'] = 80
+    image: gitlab/gitlab-ce:14.10.2-ce.0
+    labels:
+      <<: *traefik-common-middlewares
+      traefik.http.routers.gitlab-rtr.entrypoints: https
+      traefik.http.routers.gitlab-rtr.rule: Host(`gitlab.${DOMAIN_NAME}`)
+      traefik.http.routers.gitlab-rtr.middlewares: chain-authelia@file
+      traefik.http.routers.gitlab-rtr.service: gitlab-svc
+      traefik.http.services.gitlab-svc.loadbalancer.server.port: 80
+    networks:
+      reverse_proxy:
+    ports:
+      - target: 22
+        published: 2222
+        protocol: tcp
+        mode: host
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - $DOCKER_DIR/appdata/gitlab/config:/etc/gitlab
+      - $DOCKER_DIR/appdata/gitlab/data:/var/opt/gitlab
+      - $DOCKER_DIR/appdata/gitlab/logs:/var/log/gitlab
+  
+  ##
+  # Glances
+  #   Web UI for system information monitoring.
+  #   For more info:
+  #     - https://nicolargo.github.io/glances/
+  glances:
+    container_name: glances
+    environment:
+      <<: *pgid-puid-tz
+      GLANCES_OPT: '-w'
+      DOCKER_HOST: tcp://socket_proxy:2375
+    image: nicolargo/glances:latest
+    labels:
+      <<: *traefik-common-middlewares
+      traefik.http.routers.glances-rtr.entrypoints: https
+      traefik.http.routers.glances-rtr.rule: Host(`glances.${DOMAIN_NAME}`)
+      traefik.http.routers.glances-rtr.middlewares: chain-authelia@file
+      traefik.http.routers.glances-rtr.service: glances-svc
+      traefik.http.services.glances-svc.loadbalancer.server.port: 61208
+    networks:
+      reverse_proxy:
+      socket_proxy:
+    pid: host
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+
+  ##
+  # Heimdall
+  #   A dashboard for all your web applications.
+  #   For more info:
+  #     - https://heimdall.site/
+  heimdall:
+    container_name: heimdall
+    environment:
+      <<: *pgid-puid-tz
+    image: lscr.io/linuxserver/heimdall
+    labels:
+      <<: *traefik-common-middlewares
+      traefik.http.routers.heimdall-rtr.entrypoints: https
+      traefik.http.routers.heimdall-rtr.rule: Host(`apps.${DOMAIN_NAME}`)
+      traefik.http.routers.heimdall-rtr.middlewares: chain-authelia@file
+      traefik.http.routers.heimdall-rtr.service: heimdall-svc
+      traefik.http.services.heimdall-svc.loadbalancer.server.port: 80
+    networks:
+      reverse_proxy:
+    restart: unless-stopped
+    volumes:
+      - $DOCKER_DIR/appdata/heimdall:/config
+
+  ##
+  # Nextcloud
+  #   Productivity and file syncing platform.
+  #   For more info:
+  #     - https://nextcloud.com
+  nextcloud:
+    container_name: nextcloud
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      <<: *pgid-puid-tz
+      REDIS_HOST_PASSWORD: /run/secrets/redis_default_password
+    image: nextcloud:24.0.0
+    labels:
+      <<: *traefik-common-middlewares
+      traefik.http.routers.nextcloud-rtr.entrypoints: https
+      traefik.http.routers.nextcloud-rtr.rule: Host(`nextcloud.${DOMAIN_NAME}`)
+      traefik.http.routers.nextcloud-rtr.middlewares: chain-authelia@file
+      traefik.http.routers.nextcloud-rtr.service: nextcloud-svc
+      traefik.http.services.nextcloud-svc.loadbalancer.server.port: 80
+    networks:
+      reverse_proxy:
+    restart: unless-stopped
+    secrets:
+      - redis_default_password
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - $DOCKER_DIR/appdata/nextcloud/html:/var/www/html
+      - $DOCKER_DIR/appdata/nextcloud/config:/var/www/html/config
+      - $DOCKER_DIR/appdata/nextcloud/custom_apps:/var/www/html/custom_apps
+      - $DOCKER_DIR/appdata/nextcloud/data:/var/www/html/data
+      - $DOCKER_DIR/appdata/nextcloud/themes:/var/www/html/themes
+      - /etc/localtime:/etc/localtime:ro
+
+  ##
+  # Plex
+  #   A global streaming media service and client-server media platform.
+  #   For more info:
+  #     - https://www.plex.tv/
+  plex:
+    container_name: plex
+    environment:
+      <<: *pgid-puid-tz
+      ADVERTISE_IP: ${HOST_IP}:32400
+      HOSTNAME: "Plex"
+      PLEX_CLAIM: /run/secrets/plex_claim_token
+    image: plexinc/pms-docker:1.25.4.5487-648a8f9f9
+    labels:
+      <<: *traefik-common-middlewares
+      traefik.http.routers.plex-rtr.entrypoints: https
+      traefik.http.routers.plex-rtr.rule: Host(`plex.${DOMAIN_NAME}`)
+      traefik.http.routers.plex-rtr.service: plex-svc
+      traefik.http.services.plex-svc.loadbalancer.server.port: 32400
+    networks:
+      reverse_proxy:
+    ports:
+      # TCP
+      - target: 32400
+        published: 32400
+        protocol: tcp
+        mode: host
+      - target: 3005
+        published: 3005
+        protocol: tcp
+        mode: host
+      - target: 8324
+        published: 8324
+        protocol: tcp
+        mode: host
+      - target: 32469
+        published: 32469
+        protocol: tcp
+        mode: host
+      # UDP
+      - target: 1900
+        published: 1900
+        protocol: udp
+        mode: host
+      - target: 32410
+        published: 32410
+        protocol: udp
+        mode: host
+      - target: 32412
+        published: 32412
+        protocol: udp
+        mode: host
+      - target: 32413
+        published: 32413
+        protocol: udp
+        mode: host
+      - target: 32414
+        published: 32414
+        protocol: udp
+        mode: host
+    restart: unless-stopped
+    secrets:
+      - plex_claim_token
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - ${DOCKER_DIR}/appdata/plex/config:/config
+      - ${DOCKER_DIR}/appdata/plex/tmp:/transcode
+      - ${MEDIA_DIR}:/media
+
+  ##
+  # Portainer
+  #   Web UI for docker container management.
+  #   For more info:
+  #     - https://www.portainer.io/
+  portainer:
+    command: -H tcp://socket_proxy:2375
+    container_name: portainer
+    environment:
+      <<: *pgid-puid-tz
+    image: portainer/portainer-ce:2.11.1
+    labels:
+      <<: *traefik-common-middlewares
+      traefik.http.routers.portainer-rtr.entrypoints: https
+      traefik.http.routers.portainer-rtr.rule: Host(`portainer.${DOMAIN_NAME}`)
+      traefik.http.routers.portainer-rtr.middlewares: chain-authelia@file
+      traefik.http.routers.portainer-rtr.service: portainer-svc
+      traefik.http.services.portainer-svc.loadbalancer.server.port: 9000
+    networks:
+      reverse_proxy:
+      socket_proxy:
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - ${DOCKER_DIR}/appdata/portainer/data:/data

@@ -13,8 +13,27 @@ appdata/authelia/configuration.yml
 appdata/authelia/notification.txt
 appdata/authelia/users.yml
 
+# Code Server
+appdata/code/.bashrc
+appdata/code/.config
+appdata/code/.local
+appdata/code/.profile
+appdata/code/data
+
+# Gitlab
+appdata/gitlab/config/*
+appdata/gitlab/data/*
+appdata/gitlab/logs/*
+
 # Heimdall
 appdata/heimdall/*
+
+# Nextcloud
+appdata/nextcloud/config/*
+appdata/nextcloud/custom_apps/*
+appdata/nextcloud/data/*
+appdata/nextcloud/html/*
+appdata/nextcloud/themes/*
 
 # Plex
 appdata/plex/config/Library
