@@ -527,3 +527,7 @@ services:
       traefik.http.routers.vscode-rtr.middlewares: chain-authelia@file
       traefik.http.routers.vscode-rtr.service: vscode-svc
       traefik.http.services.vscode-svc.loadbalancer.server.port: 8443
+    networks:
+      reverse_proxy:
+    volumes:
+      - ${DOCKER_DIR}/appdata/vscode:/config
