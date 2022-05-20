@@ -294,6 +294,28 @@ services:
   ##############################################################################
 
   ##
+  # Code Server
+  #   VS Code running on a remote server accessible through the browser.
+  #   For more info:
+  #     - https://github.com/coder/code-server
+  code:
+    container_name: code
+    environment:
+      <<: *pgid-puid-tz
+    image: lscr.io/linuxserver/code-server:latest
+    labels:
+      <<: *traefik-common-middlewares
+      traefik.http.routers.code-rtr.entrypoints: https
+      traefik.http.routers.code-rtr.rule: Host(`code.${DOMAIN_NAME}`)
+      traefik.http.routers.code-rtr.middlewares: chain-authelia@file
+      traefik.http.routers.code-rtr.service: code-svc
+      traefik.http.services.code-svc.loadbalancer.server.port: 8443
+    networks:
+      reverse_proxy:
+    volumes:
+      - ${DOCKER_DIR}/appdata/code:/config
+
+  ##
   # GitLab
   #   Platform for building and sharing software.
   #   For more info:
