@@ -13,10 +13,17 @@ appdata/authelia/configuration.yml
 appdata/authelia/notification.txt
 appdata/authelia/users.yml
 
+# Code Server
+appdata/code/.bashrc
+appdata/code/.config
+appdata/code/.local
+appdata/code/.profile
+appdata/code/data
+
 # Gitlab
-/appdata/gitlab/config/*
-/appdata/gitlab/data/*
-/appdata/gitlab/logs/*
+appdata/gitlab/config/*
+appdata/gitlab/data/*
+appdata/gitlab/logs/*
 
 # Heimdall
 appdata/heimdall/*
