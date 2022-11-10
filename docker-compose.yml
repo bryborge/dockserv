@@ -205,7 +205,7 @@ services:
       CF_DNS_API_TOKEN: /run/secrets/cloudflare_api_token
       # CF_API_EMAIL: ${CF_API_EMAIL}
       DOMAIN_NAME: ${DOMAIN_NAME}
-    image: traefik:v2.6.0
+    image: traefik:v2.9.4
     labels:
       <<: *traefik-common-middlewares
       traefik.http.middlewares.redirect-to-https.redirectscheme.scheme: https
