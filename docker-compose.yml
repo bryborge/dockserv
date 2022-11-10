@@ -202,7 +202,7 @@ services:
       <<: *pgid-puid-tz
       # ADGUARD_IP: ${ADGUARD_IP}
       # ADGUARD_PORT: ${ADGUARD_PORT}
-      CF_API_KEY: /run/secrets/cloudflare_api_key
+      CLOUDFLARE_DNS_API_TOKEN: /run/secrets/cloudflare_api_key
       CF_API_EMAIL: ${CF_API_EMAIL}
       DOMAIN_NAME: ${DOMAIN_NAME}
     image: traefik:v2.6.0
