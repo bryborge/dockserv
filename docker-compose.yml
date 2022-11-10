@@ -178,7 +178,7 @@ services:
       - --certificatesResolvers.dns-cloudflare.acme.dnsChallenge.provider=cloudflare
       - --certificatesResolvers.dns-cloudflare.acme.dnsChallenge.resolvers=1.1.1.1:53,1.0.0.1:53
       - --certificatesResolvers.dns-cloudflare.acme.dnsChallenge.delayBeforeCheck=90
-      - --certificatesResolvers.dns-cloudflare.acme.email=${CLOUDFLARE_EMAIL}
+      - --certificatesResolvers.dns-cloudflare.acme.email=${CF_API_EMAIL}
       - --certificatesResolvers.dns-cloudflare.acme.storage=/etc/traefik/acme/acme.json
       - --entryPoints.http.address=:80
       - --entryPoints.https.address=:443
@@ -202,7 +202,7 @@ services:
       # ADGUARD_IP: ${ADGUARD_IP}
       # ADGUARD_PORT: ${ADGUARD_PORT}
       CF_API_KEY: /run/secrets/cloudflare_api_key
-      CLOUDFLARE_EMAIL: ${CLOUDFLARE_EMAIL}
+      CF_API_EMAIL: ${CF_API_EMAIL}
       DOMAIN_NAME: ${DOMAIN_NAME}
     image: traefik:v2.6.0
     labels:
