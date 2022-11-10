@@ -191,7 +191,8 @@ services:
       - --log=true
       - --log.level=WARN # (Default: ERROR) DEBUG, INFO, WARN, ERROR, FATAL, PANIC
       - --providers.docker=true
-      - --providers.docker.endpoint=tcp://socket_proxy:2375
+      # - --providers.docker.endpoint=tcp://socket_proxy:2375
+      - --providers.docker.endpoint=unix:///var/run/docker.sock
       - --providers.docker.exposedByDefault=false
       - --providers.docker.network=reverse_proxy
       - --providers.file.directory=/etc/traefik/rules
