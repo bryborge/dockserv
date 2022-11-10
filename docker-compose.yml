@@ -27,8 +27,8 @@ secrets:
   #   file: ${DOCKER_DIR}/secrets/authelia_storage_encryption_key
   # authelia_storage_postgres_password:
   #   file: ${DOCKER_DIR}/secrets/authelia_storage_postgres_password
-  cloudflare_api_key:
-    file: ${DOCKER_DIR}/secrets/cloudflare_api_key
+  cloudflare_api_token:
+    file: ${DOCKER_DIR}/secrets/cloudflare_api_token
   # ddns_updater_cloudflare_api_token:
   #   file: ${DOCKER_DIR}/secrets/ddns_updater_cloudflare_api_token
   # plex_claim_token:
@@ -178,7 +178,7 @@ services:
       - --certificatesResolvers.dns-cloudflare.acme.dnsChallenge.provider=cloudflare
       - --certificatesResolvers.dns-cloudflare.acme.dnsChallenge.resolvers=1.1.1.1:53,1.0.0.1:53
       - --certificatesResolvers.dns-cloudflare.acme.dnsChallenge.delayBeforeCheck=90
-      - --certificatesResolvers.dns-cloudflare.acme.email=${CF_API_EMAIL}
+      # - --certificatesResolvers.dns-cloudflare.acme.email=${CF_API_EMAIL}
       - --certificatesResolvers.dns-cloudflare.acme.storage=/etc/traefik/acme/acme.json
       - --entryPoints.http.address=:80
       - --entryPoints.https.address=:443
@@ -202,8 +202,8 @@ services:
       <<: *pgid-puid-tz
       # ADGUARD_IP: ${ADGUARD_IP}
       # ADGUARD_PORT: ${ADGUARD_PORT}
-      CLOUDFLARE_DNS_API_TOKEN: /run/secrets/cloudflare_api_key
-      CF_API_EMAIL: ${CF_API_EMAIL}
+      CF_DNS_API_TOKEN: /run/secrets/cloudflare_api_token
+      # CF_API_EMAIL: ${CF_API_EMAIL}
       DOMAIN_NAME: ${DOMAIN_NAME}
     image: traefik:v2.6.0
     labels:
@@ -227,7 +227,7 @@ services:
         mode: host
     restart: always
     secrets:
-      - cloudflare_api_key
+      - cloudflare_api_token
     security_opt:
       - no-new-privileges:true
     volumes:
