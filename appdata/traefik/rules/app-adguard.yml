@@ -1,15 +1,15 @@
-http:
-  routers:
-    adguard-rtr:
-      entryPoints:
-        - https
-      middlewares:
-        - chain-authelia
-      rule: "Host(`adguard.{{ env "DOMAIN_NAME" }}`)"
-      service: adguard-svc
-      tls:
-  services:
-    adguard-svc:
-      loadBalancer:
-        servers:
-          - url: "http://{{ env "ADGUARD_IP" }}:{{ env "ADGUARD_PORT" }}"
+# http:
+#   routers:
+#     adguard-rtr:
+#       entryPoints:
+#         - https
+#       middlewares:
+#         - chain-authelia
+#       rule: "Host(`adguard.{{ env "DOMAIN_NAME" }}`)"
+#       service: adguard-svc
+#       tls:
+#   services:
+#     adguard-svc:
+#       loadBalancer:
+#         servers:
+#           - url: "http://{{ env "ADGUARD_IP" }}:{{ env "ADGUARD_PORT" }}"
