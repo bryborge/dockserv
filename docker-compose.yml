@@ -27,10 +27,10 @@ secrets:
   #   file: ${DOCKER_DIR}/secrets/authelia_storage_encryption_key
   # authelia_storage_postgres_password:
   #   file: ${DOCKER_DIR}/secrets/authelia_storage_postgres_password
-  cloudflare_api_token:
-    file: ${DOCKER_DIR}/secrets/cloudflare_api_token
-  ddns_updater_cloudflare_api_token:
-    file: ${DOCKER_DIR}/secrets/ddns_updater_cloudflare_api_token
+  traefik_cf_api_token:
+    file: ${DOCKER_DIR}/secrets/traefik_cf_api_token
+  ddns_updater_cf_api_token:
+    file: ${DOCKER_DIR}/secrets/ddns_updater_cf_api_token
   # plex_claim_token:
   #   file: ${DOCKER_DIR}/secrets/plex_claim_token
   postgres_default_password:
@@ -109,12 +109,12 @@ services:
   ddns_updater:
     container_name: ddns_updater
     environment:
-      API_KEY_FILE: /run/secrets/ddns_updater_cloudflare_api_token
+      API_KEY_FILE: /run/secrets/ddns_updater_cf_api_token
       ZONE: ${DOMAIN_NAME}
     image: oznu/cloudflare-ddns:latest
     restart: always
     secrets:
-      - ddns_updater_cloudflare_api_token
+      - ddns_updater_cf_api_token
 
   ##
   # Docker Socket Proxy
@@ -200,7 +200,7 @@ services:
       <<: *pgid-puid-tz
       # ADGUARD_IP: ${ADGUARD_IP}
       # ADGUARD_PORT: ${ADGUARD_PORT}
-      CF_DNS_API_TOKEN: /run/secrets/cloudflare_api_token
+      CF_DNS_API_TOKEN: /run/secrets/traefik_cf_api_token
       DOMAIN_NAME: ${DOMAIN_NAME}
     image: traefik:v2.9.4
     labels:
@@ -224,7 +224,7 @@ services:
         mode: host
     restart: always
     secrets:
-      - cloudflare_api_token
+      - traefik_cf_api_token
     security_opt:
       - no-new-privileges:true
     volumes:
